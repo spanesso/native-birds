@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D98135D32F0F4206009E9074 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D98135D22F0F4206009E9074 /* FirebaseAnalytics */; };
+		D98135D52F0F4206009E9074 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = D98135D42F0F4206009E9074 /* FirebaseRemoteConfig */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		D98135AD2F0F179F009E9074 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D98135D32F0F4206009E9074 /* FirebaseAnalytics in Frameworks */,
+				D98135D52F0F4206009E9074 /* FirebaseRemoteConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +119,8 @@
 			);
 			name = "native-birds";
 			packageProductDependencies = (
+				D98135D22F0F4206009E9074 /* FirebaseAnalytics */,
+				D98135D42F0F4206009E9074 /* FirebaseRemoteConfig */,
 			);
 			productName = "native-birds";
 			productReference = D981359F2F0F179C009E9074 /* native-birds.app */;
@@ -195,6 +204,9 @@
 			);
 			mainGroup = D98135962F0F179C009E9074;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D98135D12F0F4206009E9074 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D98135A02F0F179C009E9074 /* Products */;
 			projectDirPath = "";
@@ -570,6 +582,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D98135D12F0F4206009E9074 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D98135D22F0F4206009E9074 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D98135D12F0F4206009E9074 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		D98135D42F0F4206009E9074 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D98135D12F0F4206009E9074 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D98135972F0F179C009E9074 /* Project object */;
 }

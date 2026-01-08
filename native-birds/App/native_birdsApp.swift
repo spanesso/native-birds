@@ -11,9 +11,7 @@ import FirebaseCore
 @main
 struct native_birdsApp: App {
     
-    init(){
-        FirebaseApp.configure()
-    }
+    private let container = DIContainer.construct()
     
     var body: some Scene {
         WindowGroup {

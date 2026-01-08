@@ -11,18 +11,20 @@ final class DIContainer{
     let router: AppRouter
     let remoteConfig : RemoteConfigRepository
     
-    private init(remoteConfig: RemoteConfigRepository) {
+    private init(
+        router: AppRouter,
+        remoteConfig: RemoteConfigRepository) {
+        self.router = router
         self.remoteConfig = remoteConfig
     }
     
     static func construct() -> DIContainer {
-        let remoteConfig = RemoteconfigImpl()
-        
+        let router = AppRouter()
+        let remoteConfig = RemoteConfigRepository()
         
         return DIContainer(
-            router: AppRouter(),
+            router: router,
             remoteConfig: remoteConfig
         )
     }
-    
 }

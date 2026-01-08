@@ -18,7 +18,7 @@ struct native_birdsApp: App {
                 router: container.router,
                 container: container
             ).task {
-                container.remoteConfig.fetchAndActivate()
+                _ = await container.remoteConfig.activate()
             }
         }
     }

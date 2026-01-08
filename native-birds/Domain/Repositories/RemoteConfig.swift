@@ -10,3 +10,10 @@ struct APIKeys :Sendable {
     let xenoToken : String?
 }
 
+protocol RemoteConfigProtocol :Sendable {
+    
+    func activate() async -> Bool
+    
+    func getAPIKeys() async -> APIKeys
+    
+}

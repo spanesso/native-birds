@@ -12,6 +12,6 @@ enum LocationAuthorizationStatus: Sendable {
     case authorized, denied, restricted
 }
 
-protocol LocationService : AnyObject, Sendable {
+protocol LocationServiceProtocol : AnyObject, Sendable {
     func requestAuthorization() async throws -> LocationAuthorizationStatus
 }

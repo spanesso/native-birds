@@ -8,6 +8,7 @@
 @MainActor
 final class DIContainer{
     
+    let router: AppRouter
     let remoteConfig : RemoteConfigRepository
     
     private init(remoteConfig: RemoteConfigRepository) {
@@ -19,6 +20,7 @@ final class DIContainer{
         
         
         return DIContainer(
+            router: AppRouter(),
             remoteConfig: remoteConfig
         )
     }

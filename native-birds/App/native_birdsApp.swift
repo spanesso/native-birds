@@ -10,12 +10,16 @@ import FirebaseCore
 
 @main
 struct native_birdsApp: App {
-    
     private let container = DIContainer.construct()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRouterView(
+                router: container.router,
+                container: container
+            ).task {
+                container.remoteConfig.fetchAndActivate()
+            }
         }
     }
 }

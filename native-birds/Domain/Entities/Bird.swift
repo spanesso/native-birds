@@ -22,3 +22,42 @@ struct Bird: Hashable, Sendable {
         case defaultPhotoMediumUrl = "default_photo_medium_url"
     }
 }
+
+
+extension Bird {
+    static func mock() -> Bird {
+        Bird(
+            taxonId: 1,
+            englishCommonName: "Peregrine Falcon",
+            name: "Peregrine Falcon",
+            defaultPhotoUrl: nil,
+            defaultPhotoMediumUrl: nil
+        )
+    }
+    
+    static func mockList() -> [Bird] {
+        [
+            Bird(
+                taxonId: 1,
+                englishCommonName: "Inca Jay",
+                name: "Cyanocorax yncas",
+                defaultPhotoUrl: nil,
+                defaultPhotoMediumUrl: nil
+            ),
+            Bird(
+                taxonId: 2,
+                englishCommonName: "Great Kiskadee",
+                name: "Pitangus sulphuratus",
+                defaultPhotoUrl: nil,
+                defaultPhotoMediumUrl: nil
+            ),
+            Bird(
+                taxonId: 3,
+                englishCommonName: "Peregrine Falcon",
+                name: "Peregrine Falcon",
+                defaultPhotoUrl: nil,
+                defaultPhotoMediumUrl: nil
+            )
+        ]
+    }
+}

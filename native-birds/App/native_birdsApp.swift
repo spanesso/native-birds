@@ -10,7 +10,12 @@ import FirebaseCore
 
 @main
 struct native_birdsApp: App {
-    private let container = DIContainer.construct()
+    private let container: DIContainer
+    
+    init(){
+        FirebaseApp.configure()
+        container = DIContainer.construct()
+    }
     
     var body: some Scene {
         WindowGroup {

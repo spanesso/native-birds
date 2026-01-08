@@ -18,9 +18,6 @@ final class RemoteConfigRepository: RemoteConfigProtocol {
     )
     
     init() {
-        if FirebaseApp.app() == nil {
-            FirebaseApp.configure()
-        }
         remoteConfig = RemoteConfig.remoteConfig()
         let settings = RemoteConfigSettings()
         settings.minimumFetchInterval = 0

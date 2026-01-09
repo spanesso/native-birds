@@ -9,9 +9,10 @@ import CoreLocation
 import Foundation
 
 enum LocationAuthorizationStatus: Sendable {
-    case authorized, denied, restricted
+    case notDetermined, authorized, denied, restricted
 }
 
 protocol LocationServiceProtocol : AnyObject, Sendable {
-    func requestAuthorization() async throws -> LocationAuthorizationStatus
+    func authorizationStatus() -> LocationAuthorizationStatus
+    func requestAuthorization() async -> LocationAuthorizationStatus
 }

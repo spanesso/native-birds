@@ -8,8 +8,10 @@
 import CoreLocation
 import Foundation
 
-final class LocationServiceImpl: NSObject, LocationServiceProtocol, CLLocationManagerDelegate {
+final class LocationService: NSObject, LocationServiceProtocol, CLLocationManagerDelegate {
+    
     let manager = CLLocationManager()
+    private var authContinuation: CheckedContinuation<LocationAuthorizationStatus, Never>?
     
     override init() {
         super.init()
@@ -18,19 +20,37 @@ final class LocationServiceImpl: NSObject, LocationServiceProtocol, CLLocationMa
     }
     
     func requestAuthorization() async -> LocationAuthorizationStatus {
-        return  await withCheckedContinuation { cont in
+        let current = authorizationStatus()
+        if current != .notDetermined {
+            return current
+        }
+        
+        return await withCheckedContinuation { continuation in
+            self.authContinuation = continuation
             self.manager.requestWhenInUseAuthorization()
         }
     }
     
-    func authorizeStatus() -> LocationAuthorizationStatus {
-        switch manager.authorizationStatus {
-            case .authorizedAlways, .authorizedWhenInUse: return .authorized
-            case .denied: return .denied
-            case .restricted: return .restricted
-            default: return .denied
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        guard let cont = authContinuation else {
+            return
         }
+        authContinuation = nil
+        cont.resume(returning: authorizationStatus())
     }
     
-    
+    func authorizationStatus() -> LocationAuthorizationStatus {
+        switch manager.authorizationStatus {
+        case .notDetermined:
+            return .notDetermined
+        case .restricted:
+            return .restricted
+        case .denied:
+            return .denied
+        case .authorizedAlways, .authorizedWhenInUse:
+            return .authorized
+        @unknown default:
+            return .denied
+        }
+    }
 }

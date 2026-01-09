@@ -44,9 +44,7 @@ final class SplashViewModel: ObservableObject {
     }
     
     func retryPermissionTapped() {
-        Task {
-            await requestPermissionAndContinue()
-        }
+        locationService.openAppSettings()
     }
     
     func retryKeysTapped() {
@@ -63,16 +61,28 @@ final class SplashViewModel: ObservableObject {
     
     private func requestPermissionAndContinue() async {
         state = .requestingPermission
-        let status = await locationService.requestAuthorization()
         
-        guard status == .authorized else {
-            modalMessage = AppCopy.Splash.Location.permissionRequiredMessage
-            showDeniedModal = true
-            state = .idle
-            return
+        let currentStatus = locationService.authorizationStatus()
+        
+        switch currentStatus {
+            case .notDetermined:
+                let newStatus = await locationService.requestAuthorization()
+                guard newStatus == .authorized else {
+                    modalMessage = AppCopy.Splash.Location.permissionRequiredMessage
+                    showDeniedModal = true
+                    state = .idle
+                    return
+                }
+                await validateRemoteConfigKeys()
+                
+            case .denied, .restricted:
+                modalMessage = AppCopy.Splash.Location.permissionRequiredMessage
+                showDeniedModal = true
+                state = .idle
+                
+            case .authorized:
+                await validateRemoteConfigKeys()
         }
-        
-        await validateRemoteConfigKeys()
     }
     
     private func validateRemoteConfigKeys() async {

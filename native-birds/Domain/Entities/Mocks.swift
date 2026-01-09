@@ -33,7 +33,6 @@ final class MockRemoteConfig: RemoteConfigProtocol {
 }
 
 final class MockLocationService: LocationServiceProtocol {
-
     private let status: LocationAuthorizationStatus
 
     init(status: LocationAuthorizationStatus) {
@@ -47,6 +46,8 @@ final class MockLocationService: LocationServiceProtocol {
     func requestAuthorization() async -> LocationAuthorizationStatus {
         status
     }
+    
+    func openAppSettings() { }
 }
  
 extension Bird {

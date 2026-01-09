@@ -51,12 +51,12 @@ struct SplashView: View {
                     Text(AppCopy.Splash.SplashViewCopy.title)
                         .font(.system(size: 52, weight: .heavy))
                         .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     
                     Text(AppCopy.Splash.SplashViewCopy.subTitle)
                         .font(.system(size: 20, weight: .regular))
                         .foregroundStyle(.white.opacity(0.85))
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .padding(.horizontal, 28)
                 

@@ -14,7 +14,13 @@ struct AppRouterView: View {
     
     var body: some View {
         NavigationStack(path: $router.path){
-            SplashView()
+            SplashView(
+                viewModel: SplashViewModel(
+                    router: router,
+                    remoteConfig: container.remoteConfig,
+                    locationService: container.locationService
+                )
+            )
             
         }
     }

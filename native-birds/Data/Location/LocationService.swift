@@ -7,6 +7,7 @@
 
 import CoreLocation
 import Foundation
+import UIKit
 
 final class LocationService: NSObject, LocationServiceProtocol, CLLocationManagerDelegate {
     
@@ -52,5 +53,12 @@ final class LocationService: NSObject, LocationServiceProtocol, CLLocationManage
         @unknown default:
             return .denied
         }
+    }
+    
+    func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+        UIApplication.shared.open(url)
     }
 }

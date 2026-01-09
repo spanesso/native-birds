@@ -24,7 +24,7 @@ struct SplashView: View {
                 .resizable()
                 .scaledToFit()
                 .foregroundStyle(.white.opacity(0.85))
-                .padding(.horizontal, 60)
+                .padding(.horizontal, BirdSpacing.imageHorizontal)
         }
     }
     
@@ -45,10 +45,10 @@ struct SplashView: View {
         ZStack {
             backgroundView
             
-            VStack(spacing: 16) {
-                Spacer(minLength: 40)
+            VStack(spacing: BirdSpacing.sectionVertical) {
+                Spacer(minLength: BirdSpacing.large)
                 
-                VStack(spacing: 10) {
+                VStack(spacing: BirdSpacing.contentVertical) {
                     BirdLabel(
                         text: AppCopy.Splash.SplashViewCopy.title,
                         style: .title
@@ -59,18 +59,18 @@ struct SplashView: View {
                         style: .subtitle
                     )
                 }
-                .padding(.horizontal, 22)
+                .padding(.horizontal, BirdSpacing.screenHorizontal)
                 
                 Spacer()
                 
                 birdImage
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 22)
+                    .padding(.horizontal, BirdSpacing.imageHorizontal)
                 
                 Spacer()
                 
                 if viewModel.state == .idle {
-                    PrimaryButton(
+                    BirdButton(
                         title: AppCopy.Splash.Actions.startAdventure,
                         state: viewModel.state == .requestingPermission ||
                         viewModel.state == .validatingRemoteConfig
@@ -78,29 +78,29 @@ struct SplashView: View {
                         : .normal
                     ) {
                         viewModel.startAdventureTapped()
-                    }.padding(.horizontal, 22)
+                    }.padding(.horizontal, BirdSpacing.screenHorizontal)
                 }
             }
         }
+        .navigationBarBackButtonHidden(true)
         .onAppear {
             viewModel.onAppear()
         }
-        .navigationBarBackButtonHidden(true)
-        .alert(AppCopy.Splash.Location.permissionRequiredTitle,
-               isPresented: $viewModel.showDeniedModal) {
-            Button(AppCopy.Global.retry) { viewModel.retryPermissionTapped() }
-            Button(AppCopy.Global.cancel, role: .cancel) { }
-        } message: {
-            Text(viewModel.modalMessage)
+        .birdAlert(
+            isPresented: $viewModel.showDeniedModal,
+            title: AppCopy.Splash.Location.permissionRequiredTitle,
+            message: viewModel.modalMessage
+        ) {
+            viewModel.retryPermissionTapped()
         }
-        .alert(AppCopy.Splash.RemoteConfig.missingKeysTitle, isPresented: $viewModel.showKeysModal) {
-            Button(AppCopy.Global.retry) { viewModel.retryKeysTapped() }
-            Button(AppCopy.Global.cancel, role: .cancel) { }
-        } message: {
-            Text(viewModel.modalMessage)
+        .birdAlert(
+            isPresented: $viewModel.showKeysModal,
+            title: AppCopy.Splash.RemoteConfig.missingKeysTitle,
+            message: viewModel.modalMessage
+        ) {
+            viewModel.retryKeysTapped()
         }
     }
-    
 }
 
 #Preview("Splash – Idle") {

@@ -13,6 +13,7 @@ enum LocationAuthorizationStatus: Sendable {
 }
 
 protocol LocationServiceProtocol : AnyObject, Sendable {
-    func authorizationStatus() -> LocationAuthorizationStatus
     func requestAuthorization() async -> LocationAuthorizationStatus
+    func authorizationStatus() -> LocationAuthorizationStatus
+    func openAppSettings()
 }

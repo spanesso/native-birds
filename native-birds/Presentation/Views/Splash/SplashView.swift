@@ -41,6 +41,7 @@ struct SplashView: View {
     }
     
     var body: some View {
+        
         ZStack {
             backgroundView
             
@@ -48,17 +49,17 @@ struct SplashView: View {
                 Spacer(minLength: 40)
                 
                 VStack(spacing: 10) {
-                    Text(AppCopy.Splash.SplashViewCopy.title)
-                        .font(.system(size: 52, weight: .heavy))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                    BirdLabel(
+                        text: AppCopy.Splash.SplashViewCopy.title,
+                        style: .title
+                    )
                     
-                    Text(AppCopy.Splash.SplashViewCopy.subTitle)
-                        .font(.system(size: 20, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.85))
-                        .frame(maxWidth: .infinity, alignment: .center)
+                    BirdLabel(
+                        text: AppCopy.Splash.SplashViewCopy.subTitle,
+                        style: .subtitle
+                    )
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, 22)
                 
                 Spacer()
                 
@@ -72,12 +73,12 @@ struct SplashView: View {
                     PrimaryButton(
                         title: AppCopy.Splash.Actions.startAdventure,
                         state: viewModel.state == .requestingPermission ||
-                               viewModel.state == .validatingRemoteConfig
-                               ? .loading
-                               : .normal
+                        viewModel.state == .validatingRemoteConfig
+                        ? .loading
+                        : .normal
                     ) {
                         viewModel.startAdventureTapped()
-                    }
+                    }.padding(.horizontal, 22)
                 }
             }
         }

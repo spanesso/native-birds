@@ -13,10 +13,7 @@ enum PrimaryButtonState: Equatable {
     case disabled
 }
 
-import SwiftUI
-
 struct PrimaryButton: View {
-
     let title: String
     let state: PrimaryButtonState
     let action: () -> Void
@@ -45,6 +42,7 @@ struct PrimaryButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 18)
+            .padding(.horizontal, 20)
             .background(BirdTheme.accentYellow)
             .clipShape(Capsule())
             .shadow(

@@ -23,7 +23,7 @@ enum AppCopy {
         
         enum SplashViewCopy {
             static let title =
-            "BirdSongs"
+            "Native Birds"
             
             static let subTitle =
             "Discover and listen to the world of birds"

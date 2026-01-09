@@ -15,5 +15,6 @@ struct BirdsListView: View {
                 .foregroundStyle(BirdTheme.deepBlack)
         }
         .navigationTitle("Nearby Birds")
+        .navigationBarBackButtonHidden(true)
     }
 }

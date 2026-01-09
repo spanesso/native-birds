@@ -68,24 +68,17 @@ struct SplashView: View {
                 
                 Spacer()
                 
-                Button(action: { viewModel.startAdventureTapped() }) {
-                    HStack {
-                        if viewModel.state == .requestingPermission || viewModel.state == .validatingRemoteConfig {
-                            ProgressView().tint(BirdTheme.deepBlack)
-                        }
-                        Text(AppCopy.Splash.Actions.startAdventure)
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(BirdTheme.deepBlack)
+                if viewModel.state == .idle {
+                    PrimaryButton(
+                        title: AppCopy.Splash.Actions.startAdventure,
+                        state: viewModel.state == .requestingPermission ||
+                               viewModel.state == .validatingRemoteConfig
+                               ? .loading
+                               : .normal
+                    ) {
+                        viewModel.startAdventureTapped()
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(BirdTheme.accentYellow)
-                    .clipShape(Capsule())
-                    .shadow(color: .black.opacity(0.20), radius: 10, x: 0, y: 6)
                 }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 26)
-                .disabled(viewModel.state == .requestingPermission || viewModel.state == .validatingRemoteConfig)
             }
         }
         .onAppear {

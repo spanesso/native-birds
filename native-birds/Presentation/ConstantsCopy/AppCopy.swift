@@ -55,4 +55,17 @@ enum AppCopy {
             "Start Adventure"
         }
     }
+    
+    enum BirdList {
+        
+        enum BirdListViewCopy {
+            static let title =
+            "Nearby Birds"
+            
+            static let subTitle =
+            "Discover and listen to the world of birds"
+            
+            
+        }
+    }
 }

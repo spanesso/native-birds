@@ -13,15 +13,24 @@ struct AppRouterView: View {
     let container: DIContainer
     
     var body: some View {
-        NavigationStack(path: $router.path){
+        NavigationStack(path: Binding(
+                   get: { router.path },
+                   set: { router.path = $0 }
+               )) {
             SplashView(
                 viewModel: SplashViewModel(
                     router: router,
                     remoteConfig: container.remoteConfig,
                     locationService: container.locationService
                 )
-            )
-            
+            ).navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .birdList:
+                    BirdsListView( )
+                case .birdDetail(let bird):
+                    BirdsListView( )
+                }
+            }
         }
     }
 }

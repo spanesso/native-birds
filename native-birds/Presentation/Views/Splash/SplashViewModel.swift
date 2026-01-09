@@ -32,6 +32,7 @@ final class SplashViewModel: ObservableObject {
     
     func onAppear() {
         Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
             await checkIfContinueIsPossible()
         }
     }

@@ -9,7 +9,7 @@ import SwiftUI
 internal import Combine
 
 @MainActor
-final class AppRouter: ObservableObject {
+final class AppRouter: ObservableObject,RouterProtocol {
     @Published var path: [AppRoute] = []
     
     func push(_ route : AppRoute){
@@ -19,4 +19,3 @@ final class AppRouter: ObservableObject {
     
     func pop() { path.popLast() }
 }
-

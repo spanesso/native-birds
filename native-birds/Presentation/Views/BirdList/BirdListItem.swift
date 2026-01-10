@@ -19,8 +19,35 @@ struct BirdListItem: View {
                 .frame(width: 72, height: 72)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
-       
-            
+            VStack(alignment: .leading, spacing: 6) {
+                Text(bird.englishCommonName ?? bird.name)
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(BirdTheme.deepBlack)
+
+                Text(bird.name)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(BirdTheme.primaryGreen)
+            }
+
+            Spacer()
+
+            HStack(spacing: 12) {
+                Circle()
+                    .fill(BirdTheme.accentYellow)
+                    .frame(width: 36, height: 36)
+                    .overlay(
+                        Image(systemName: "location.fill")
+                            .foregroundStyle(.black.opacity(0.75))
+                    )
+
+                Circle()
+                    .fill(BirdTheme.electricBlue)
+                    .frame(width: 44, height: 44)
+                    .overlay(
+                        Image(systemName: "play.fill")
+                            .foregroundStyle(.white)
+                    )
+            }
         }
         .padding(14)
         .background(
@@ -33,3 +60,4 @@ struct BirdListItem: View {
         )
     }
 }
+

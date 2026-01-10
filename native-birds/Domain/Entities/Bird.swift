@@ -23,3 +23,17 @@ struct Bird: Hashable, Sendable {
     }
 }
 
+extension Bird {
+    static func preview(
+        english: String = "Great Kiskadee",
+        scientific: String = "Pitangus sulphuratus"
+    ) -> Bird {
+        Bird(
+            taxonId: 1,
+            englishCommonName: english,
+            name: scientific,
+            defaultPhotoUrl: nil,
+            defaultPhotoMediumUrl: nil
+        )
+    }
+}

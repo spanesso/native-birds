@@ -12,6 +12,8 @@ enum BirdLabelStyle {
     case subtitle
     case body
     case caption
+    case listTitle
+      case listSubtitle
 }
 
 struct BirdLabel: View {

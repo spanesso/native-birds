@@ -13,41 +13,85 @@ struct BirdListItem: View {
     let cache: BirdImageCacheProtocol
 
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
+        HStack(
+            alignment: .center,
+            spacing: BirdSpacing.listItemSpacing
+        ) {
 
-            BirdRemoteImage(url: bird.defaultPhotoUrl, cache: cache)
-                .frame(width: 72, height: 72)
-                .clipShape(
-                    RoundedRectangle(
-                        cornerRadius: 14,
-                        style: .continuous
-                    )
+            BirdRemoteImage(
+                url: bird.defaultPhotoUrl,
+                cache: cache
+            )
+            .frame(
+                width: BirdSpacing.listItemImageSize,
+                height: BirdSpacing.listItemImageSize
+            )
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: BirdSpacing.listItemImageCornerRadius,
+                    style: .continuous
                 )
+            )
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(bird.englishCommonName ?? bird.name)
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(BirdTheme.deepBlack)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+            VStack(
+                alignment: .leading,
+                spacing: BirdSpacing.listItemTextSpacing
+            ) {
+                BirdLabel(
+                    text: bird.englishCommonName ?? bird.name,
+                    style: .listTitle
+                )
+                .lineLimit(2)
 
-                Text(bird.name)
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(BirdTheme.primaryGreen)
-                    .lineLimit(1)
+                BirdLabel(
+                    text: bird.name,
+                    style: .listSubtitle
+                )
+                .lineLimit(1)
             }
 
             Spacer()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
+        .frame(
+            maxWidth: .infinity,
+            alignment: .leading
+        )
+        .padding(BirdSpacing.listItemPadding)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(.white.opacity(0.55))
+            RoundedRectangle(
+                cornerRadius: BirdSpacing.listItemCornerRadius,
+                style: .continuous
+            )
+            .fill(.white.opacity(0.55))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(.white.opacity(0.35), lineWidth: 1)
+            RoundedRectangle(
+                cornerRadius: BirdSpacing.listItemCornerRadius,
+                style: .continuous
+            )
+            .stroke(.white.opacity(0.35), lineWidth: 1)
         )
+    }
+}
+
+#Preview("BirdListItem – Default") {
+    ZStack {
+        BirdGradientBackground()
+
+        VStack(spacing: BirdSpacing.sectionVertical) {
+            BirdListItem(
+                bird: .preview(),
+                cache: MockBirdImageCache()
+            )
+
+            BirdListItem(
+                bird: .preview(
+                    english: "Yellow-rumped Cacique With a Very Long Name",
+                    scientific: "Cacicus cela cela"
+                ),
+                cache: MockBirdImageCache()
+            )
+        }
+        .padding(.horizontal, BirdSpacing.screenHorizontal)
     }
 }

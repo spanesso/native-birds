@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import UIKit
 
 @MainActor
 final class MockRouter: RouterProtocol {
@@ -113,3 +114,9 @@ struct MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
     }
 }
 
+struct MockBirdImageCache: BirdImageCacheProtocol {
+    func store(_ image: UIImage, for url: URL) async { }
+    
+    func image(for url: URL) -> UIImage? { nil }
+    func save(_ image: UIImage, for url: URL) {}
+}

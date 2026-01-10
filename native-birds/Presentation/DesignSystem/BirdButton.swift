@@ -54,6 +54,7 @@ struct BirdButton: View {
             .opacity(state == .disabled ? 0.6 : 1.0)
         }
         .disabled(state != .normal)
+        .accessibilityIdentifier("bird_button_\(title.lowercased())")
     }
 }
 

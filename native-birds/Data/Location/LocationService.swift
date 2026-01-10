@@ -14,6 +14,8 @@ final class LocationService: NSObject, LocationServiceProtocol, CLLocationManage
     let manager = CLLocationManager()
     private var authContinuation: CheckedContinuation<LocationAuthorizationStatus, Never>?
     
+    private var locationContinuation: CheckedContinuation<CLLocationCoordinate2D, Error>?
+    
     override init() {
         super.init()
         manager.delegate = self
@@ -60,5 +62,36 @@ final class LocationService: NSObject, LocationServiceProtocol, CLLocationManage
             return
         }
         UIApplication.shared.open(url)
+    }
+    
+    func getCurrentCoordinates() async throws -> CLLocationCoordinate2D {
+        let status = authorizationStatus()
+        guard status == .authorized else {
+            throw LocationServiceError.authorizationDenied
+        }
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            self.locationContinuation = continuation
+            self.manager.requestLocation()
+        }
+    }
+    
+    // /CAMBIO/
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let cont = locationContinuation else { return }
+        locationContinuation = nil
+        
+        if let coordinate = locations.first?.coordinate {
+            cont.resume(returning: coordinate)
+        } else {
+            cont.resume(throwing: LocationServiceError.unableToDetermineLocation)
+        }
+    }
+    
+    // /CAMBIO/
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        guard let cont = locationContinuation else { return }
+        locationContinuation = nil
+        cont.resume(throwing: error)
     }
 }

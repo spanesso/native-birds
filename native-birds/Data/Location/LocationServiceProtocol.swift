@@ -15,5 +15,9 @@ enum LocationAuthorizationStatus: Sendable {
 protocol LocationServiceProtocol : AnyObject, Sendable {
     func requestAuthorization() async -> LocationAuthorizationStatus
     func authorizationStatus() -> LocationAuthorizationStatus
+    
+    
     func openAppSettings()
+    
+    func getCurrentCoordinates() async throws -> CLLocationCoordinate2D
 }

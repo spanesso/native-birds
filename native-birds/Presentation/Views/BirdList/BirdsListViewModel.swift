@@ -77,7 +77,7 @@ final class BirdsListViewModel: ObservableObject {
                 lat: location.latitude,
                 lng: location.longitude,
                 page: page,
-                perPage: 21,
+                perPage: 25,
                 bearerToken: token
             )
             

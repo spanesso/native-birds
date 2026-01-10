@@ -21,3 +21,8 @@ protocol LocationServiceProtocol : AnyObject, Sendable {
     
     func getCurrentCoordinates() async throws -> CLLocationCoordinate2D
 }
+
+enum LocationServiceError: Error, Sendable {
+    case notAuthorized
+    case failedToGetLocation
+}

@@ -37,7 +37,7 @@ enum AppCopy {
             
             static let missingKeysMessage =
             "Required keys from Remote Config are missing. Please verify your Firebase Remote Config configuration and try again."
-       
+            
         }
         
         enum Location {
@@ -47,7 +47,7 @@ enum AppCopy {
             static let permissionRequiredMessage =
             "BirdSongs needs access to your location to show nearby birds. Please enable GPS permissions to continue."
             
-       
+            
         }
         
         enum Actions {
@@ -64,6 +64,15 @@ enum AppCopy {
             
             static let subTitle =
             "Discover and listen to the world of birds"
+            
+            static let loading =
+            "Loading nearby birds..."
+            
+            
+            
+            static let empty =
+            "No birds found nearby."
+            
             
             
         }

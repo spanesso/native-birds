@@ -67,7 +67,7 @@ final class LocationService: NSObject, LocationServiceProtocol, CLLocationManage
     func getCurrentCoordinates() async throws -> CLLocationCoordinate2D {
         let status = authorizationStatus()
         guard status == .authorized else {
-            throw LocationServiceError.authorizationDenied
+            throw LocationServiceError.notAuthorized
         }
         
         return try await withCheckedThrowingContinuation { continuation in
@@ -76,7 +76,6 @@ final class LocationService: NSObject, LocationServiceProtocol, CLLocationManage
         }
     }
     
-    // /CAMBIO/
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let cont = locationContinuation else { return }
         locationContinuation = nil
@@ -84,11 +83,10 @@ final class LocationService: NSObject, LocationServiceProtocol, CLLocationManage
         if let coordinate = locations.first?.coordinate {
             cont.resume(returning: coordinate)
         } else {
-            cont.resume(throwing: LocationServiceError.unableToDetermineLocation)
+            cont.resume(throwing: LocationServiceError.failedToGetLocation)
         }
     }
     
-    // /CAMBIO/
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         guard let cont = locationContinuation else { return }
         locationContinuation = nil

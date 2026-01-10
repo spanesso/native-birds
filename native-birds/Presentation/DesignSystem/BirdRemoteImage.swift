@@ -49,8 +49,6 @@ struct BirdRemoteImage: View {
                 self.uiImage = img
                 await cache.store(img, for: url)
             }
-        } catch {
-            // Silencioso: se queda placeholder
-        }
+        } catch {}
     }
 }

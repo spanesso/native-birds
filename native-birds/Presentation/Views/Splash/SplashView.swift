@@ -27,23 +27,12 @@ struct SplashView: View {
                 .padding(.horizontal, BirdSpacing.imageHorizontal)
         }
     }
-    
-    private var backgroundView: some View {
-        LinearGradient(
-            gradient: Gradient(colors: [
-                BirdTheme.primaryGreen,
-                BirdTheme.electricBlue
-            ]),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
-    }
+ 
     
     var body: some View {
         
         ZStack {
-            backgroundView
+            BirdGradientBackground()
             
             VStack(spacing: BirdSpacing.sectionVertical) {
                 Spacer(minLength: BirdSpacing.large)

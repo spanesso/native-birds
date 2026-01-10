@@ -7,20 +7,34 @@
 
 import Foundation
 
-protocol FetchNearbyBirdsUseCaseProtocol: Sendable {
-    func execute(lat: Double, lng: Double, page: Int, perPage: Int, bearerToken: String) async throws -> BirdsPage
-}
 
 struct FetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
+
     let repo: BirdsRepositoryProtocol
 
-    func execute(lat: Double, lng: Double, page: Int, perPage: Int, bearerToken: String) async throws -> BirdsPage {
-        try await repo.fetchNearbyBirds(
+    func execute(
+        lat: Double,
+        lng: Double,
+        page: Int,
+        perPage: Int,
+        bearerToken: String
+    ) async throws -> PagedResult<Bird> {
+
+        let pageResult = try await repo.fetchNearbyBirds(
             lat: lat,
             lng: lng,
             page: page,
             perPage: perPage,
             bearerToken: bearerToken
+        )
+
+        let birds = pageResult.birds
+
+        let hasMore = (pageResult.page * pageResult.perPage) < pageResult.totalResults
+
+        return PagedResult(
+            items: birds,
+            hasMore: hasMore
         )
     }
 }

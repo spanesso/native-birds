@@ -19,6 +19,18 @@ enum AppCopy {
         
     }
     
+    enum Error {
+        
+        static let missingINaturalistToken =
+        "Missing iNaturalist token from Remote Config."
+        
+        static let missingLocation =
+        "Unable to retrieve current location."
+        
+    }
+    
+    
+  
     enum Splash {
         
         enum SplashViewCopy {

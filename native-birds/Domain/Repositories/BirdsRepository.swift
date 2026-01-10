@@ -35,7 +35,9 @@ final class BirdsRepository: BirdsRepositoryProtocol {
             .init(name: "page", value: "\(page)")
         ]
 
-        guard let url = components.url else { throw NetworkError.invalidResponse }
+        guard let url = components.url else {
+            throw NetworkError.invalidResponse
+        }
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"

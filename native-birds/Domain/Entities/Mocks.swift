@@ -34,20 +34,24 @@ final class MockRemoteConfig: RemoteConfigProtocol {
 
 final class MockLocationService: LocationServiceProtocol {
     private let status: LocationAuthorizationStatus
+    private let coordinate: CLLocationCoordinate2D
 
-    init(status: LocationAuthorizationStatus) {
+    init(
+        status: LocationAuthorizationStatus,
+        coordinate: CLLocationCoordinate2D = .init(latitude: 6.2106, longitude: -75.5050)
+    ) {
         self.status = status
+        self.coordinate = coordinate
     }
 
-    func authorizationStatus() -> LocationAuthorizationStatus {
-        status
-    }
-
-    func requestAuthorization() async -> LocationAuthorizationStatus {
-        status
-    }
-    
+    func authorizationStatus() -> LocationAuthorizationStatus { status }
+    func requestAuthorization() async -> LocationAuthorizationStatus { status }
     func openAppSettings() { }
+
+    func getCurrentCoordinates() async throws -> CLLocationCoordinate2D {
+        guard status == .authorized else { throw LocationServiceError.notAuthorized }
+        return coordinate
+    }
 }
  
 extension Bird {
@@ -87,3 +91,25 @@ extension Bird {
         ]
     }
 }
+
+struct MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
+
+    func execute(
+        lat: Double,
+        lng: Double,
+        page: Int,
+        perPage: Int,
+        bearerToken: String
+    ) async throws -> PagedResult<Bird> {
+
+        let birds = Bird.mockList()
+
+        let hasMore = (page * perPage) < 100
+
+        return PagedResult(
+            items: birds,
+            hasMore: hasMore
+        )
+    }
+}
+

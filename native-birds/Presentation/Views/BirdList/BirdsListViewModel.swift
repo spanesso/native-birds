@@ -11,132 +11,239 @@ internal import Combine
 
 @MainActor
 final class BirdsListViewModel: ObservableObject {
-
-    @Published private(set) var state: BirdsListUIState = .idle
-    @Published private(set) var birds: [Bird] = []
     
+    @Published private(set) var state : BirdsListUIState = .idle
+    @Published private(set) var  birds : [Bird] = []
     @Published private(set) var currentPage: Int = 1
     
-    @Published private(set) var canLoadMore: Bool = true
-
+    @Published private(set)  var canLoadMore: Bool = true
+    
     private let locationService: LocationServiceProtocol
     private let remoteConfig: RemoteConfigProtocol
     private let fetchNearbyBirds: FetchNearbyBirdsUseCaseProtocol
-
-    private let perPage: Int = 21
+    
+    private let perPage:  Int = 21
+    
     private var isRequestInProcess: Bool = false
-
+    
+    private var cachedCoordinate: CLLocationCoordinate2D?
+    
     init(
         locationService: LocationServiceProtocol,
+        
         remoteConfig: RemoteConfigProtocol,
         fetchNearbyBirds: FetchNearbyBirdsUseCaseProtocol
     ) {
         self.locationService = locationService
         self.remoteConfig = remoteConfig
+        
         self.fetchNearbyBirds = fetchNearbyBirds
     }
-
+    
     func onAppear() {
-        guard state == .idle else { return }
-        Task { await loadFirstPage() }
-    }
-
-    func loadFirstPage() async {
-        await performFetch(isFirstPage: true)
-    }
-
-    func loadNextPage() async {
-        guard canLoadMore,
-              (state == .loaded || state == .loadingMore) else {
+        guard state ==  .idle else {
             return
         }
-        await performFetch(isFirstPage: false)
+        Task {
+            await loadFirstPage()
+        }
     }
- 
-    private func performFetch(isFirstPage: Bool) async {
-        guard !isRequestInProcess else {
+    
+    func loadFirstPage() async {
+        await load(page: 1, isFirstPage: true)
+    }
+    
+    func loadNextPage() async {
+        guard canLoadMore else { return }
+        await load(page: currentPage + 1, isFirstPage: false)
+    }
+    
+    private func load(page: Int, isFirstPage: Bool) async {
+        if isFirstPage {
+            state = .loading
+        } else {
+            state = .loadingMore
+        }
+        
+        do {
+            let location = try await locationService.getCurrentCoordinates()
+            let keys = await remoteConfig.getAPIKeys()
+            guard let token = keys.inatToken, !token.isEmpty else {
+                state = .error(AppCopy.Splash.RemoteConfig.missingKeysMessage)
+                return
+            }
+            
+            let result = try await fetchNearbyBirds.execute(
+                lat: location.latitude,
+                lng: location.longitude,
+                page: page,
+                perPage: 21,
+                bearerToken: token
+            )
+            
+            handleSuccess(result: result, isFirstPage: isFirstPage, targetPage: page)
+            
+        } catch {
+            state = .error(error.localizedDescription)
+        }
+    }
+    
+    func loadNextPageIfNeeded(currentItem: Bird) {
+        guard canLoadMore else { return }
+        guard state == .loaded else {
+            return }
+        guard let last = birds.last, last == currentItem else {
             return
         }
         
+        Task { await loadNextPage() }
+    }
+    
+    private enum PageRequest {
+        case first
+        case next(currentPage: Int)
+        
+        var isFirst: Bool {
+            if case .first = self {
+                return true
+            }
+            return false
+        }
+        
+        var targetPage: Int {
+            switch self {
+            case .first: return 1
+                
+            case .next(let currentPage): return currentPage + 1
+            }
+        }
+    }
+    
+    private func performFetch(pageRequest: PageRequest) async {
+        guard !isRequestInProcess else { return }
         isRequestInProcess = true
         defer { isRequestInProcess = false }
         
-        prepareState(isFirstPage: isFirstPage)
+        prepareState(isFirstPage: pageRequest.isFirst)
         
         do {
-            let coordinate = try await locationService.getCurrentCoordinates()
-            let token = try await getValidatedToken()
+            let coordinate = try await resolveCoordinate(isFirstPage: pageRequest.isFirst)
             
-            let targetPage = isFirstPage ? 1 : currentPage + 1
+            
+            let token = try await getValidatedToken()
             
             let pageResult = try await fetchNearbyBirds.execute(
                 lat: coordinate.latitude,
                 lng: coordinate.longitude,
-                page: targetPage,
+                page: pageRequest.targetPage,
                 perPage: perPage,
                 bearerToken: token
             )
             
-            handleSuccess(result: pageResult, isFirstPage: isFirstPage, targetPage: targetPage)
+            handleSuccess(
+                result: pageResult,
+                isFirstPage: pageRequest.isFirst,
+                targetPage: pageRequest.targetPage
+            )
             
         } catch {
-            handleError(error, isFirstPage: isFirstPage)
+            handleError(error, isFirstPage: pageRequest.isFirst)
         }
     }
-
+    
+    private func resolveCoordinate(isFirstPage: Bool) async throws -> CLLocationCoordinate2D {
+        if isFirstPage {
+            cachedCoordinate = nil
+        }
+        
+        if let cachedCoordinate {
+            return cachedCoordinate
+        }
+        
+        let coordinate = try await locationService.getCurrentCoordinates()
+        cachedCoordinate = coordinate
+        return coordinate
+    }
+    
     private func prepareState(isFirstPage: Bool) {
         if isFirstPage {
             state = .loading
             birds = []
+            currentPage = 1
             canLoadMore = true
         } else {
             state = .loadingMore
         }
     }
-
+    
     private func getValidatedToken() async throws -> String {
         let keys = await remoteConfig.getAPIKeys()
-        guard let token = keys.inatToken, !token.isEmpty else {
-            throw LocationError.missingToken
+        
+        let token = (keys.inatToken ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !token.isEmpty else {
+            throw AppError.missingINaturalistToken
         }
         return token
     }
-
-    private func handleSuccess(result: BirdsPage, isFirstPage: Bool, targetPage: Int) {
+    
+    private func handleSuccess(result: PagedResult<Bird>, isFirstPage: Bool, targetPage: Int) {
         if isFirstPage {
-            birds = result.birds
+            birds = mergeDeduplicate(existing: [], incoming: result.items)
         } else {
-            birds.append(contentsOf: result.birds)
+            birds = mergeDeduplicate(existing: birds, incoming: result.items)
         }
-        
+
         currentPage = targetPage
-        
         canLoadMore = result.hasMore
-        
         state = birds.isEmpty ? .empty : .loaded
     }
-
-    private func handleError(_ error: Error, isFirstPage: Bool) {
+    
+    private func mergeDeduplicate(
+        existing: [Bird],
+        incoming: [Bird]
+    ) -> [Bird] {
+        var indexByName: [String: Int] = [:]
+        var result: [Bird] = []
         
-        
-        if (error as? LocationError) == .missingToken {
-            state = .error(AppCopy.Splash.RemoteConfig.missingKeysMessage)
-            return
+        func score(_ bird: Bird) -> Int {
+            var s = 0
+            if bird.defaultPhotoUrl != nil { s += 1 }
+            
+            if bird.defaultPhotoMediumUrl != nil { s += 1 }
+           
+            if let common = bird.englishCommonName,
+               !common.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { s += 1 }
+            return s
         }
         
-        let message = isFirstPage
-            ? "Unable to load nearby birds. Please try again."
+        func upsert(_ bird: Bird) {
+            if let existingIndex = indexByName[bird.name] {
+                let current = result[existingIndex]
+                if score(bird) > score(current) {
+                    result[existingIndex] = bird
+                }
+                
+            } else {
+                indexByName[bird.name] = result.count
+                result.append(bird)
+            }
+        }
         
-            : "Unable to load more birds. Please try again."
-        state = .error(message)
+        existing.forEach(upsert)
+        incoming.forEach(upsert)
+        
+        return result
     }
-
-
     
     
-    private enum LocationError: Error {
-        
-        case missingToken
+    
+    private func handleError(_ error: Error, isFirstPage: Bool) {
+        if !isFirstPage, !birds.isEmpty {
+            state = .loaded
+            return
+        }
+        state = .error(error.localizedDescription)
     }
 }
-

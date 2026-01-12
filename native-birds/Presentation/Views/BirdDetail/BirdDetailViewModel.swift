@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 internal import Combine
 
 @MainActor
@@ -81,7 +82,7 @@ final class BirdDetailViewModel: ObservableObject {
             
             let tempURL = try await downloader.download(remoteURL: remote) { [weak self] progress in
                 Task { @MainActor in
-                    self?.audioState = .downloading(progress: min(max(progress, 0), 1))
+                    self?.audioState = .downloading(progress: progress)
                 }
             }
             
@@ -100,8 +101,7 @@ final class BirdDetailViewModel: ObservableObject {
         switch audioState {
             
         case .ready(let url):
-            try? player.load(localURL: url)
-            player.play()
+            player.play(url: url)
             audioState = .playing(localFileURL: url)
             
         case .playing(let url):
@@ -109,12 +109,11 @@ final class BirdDetailViewModel: ObservableObject {
             audioState = .paused(localFileURL: url)
             
         case .paused(let url):
-            player.play()
+            player.play(url: url)
             audioState = .playing(localFileURL: url)
             
         default:
             break
         }
     }
-    
 }

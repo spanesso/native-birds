@@ -6,7 +6,6 @@
 //
 import SwiftUI
 
-
 struct BirdDetailView: View {
     let bird: Bird
     let imageCache: BirdImageCacheProtocol
@@ -16,18 +15,33 @@ struct BirdDetailView: View {
     let onBack: () -> Void
     
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack(alignment: .topLeading) {
+            
             BirdHeroImage(url: bird.defaultPhotoMediumUrl, cache: imageCache)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .zIndex(0)
             
-            LinearGradient(colors: [.black.opacity(0.4), .clear], startPoint: .top, endPoint: .center)
-                .ignoresSafeArea()
-                .zIndex(1)
+            LinearGradient(
+                colors: [.black.opacity(0.5), .clear],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 150)
+            .ignoresSafeArea()
+            .zIndex(1)
             
-            BirdDetailBottomSheet(bird: bird, viewModel: viewModel, audioPlayer: audioPlayer)
-                .frame(maxWidth: .infinity)
+            BirdBackButton(action: onBack)
                 .zIndex(2)
+            
+            VStack {
+                Spacer()
+                BirdDetailBottomSheet(
+                    bird: bird,
+                    viewModel: viewModel,
+                    audioPlayer: audioPlayer
+                )
+            }
+            .zIndex(3)
         }
         .navigationBarBackButtonHidden(true)
         .onAppear { viewModel.onAppear() }

@@ -11,30 +11,31 @@ struct BirdWaveformView: View {
     let audioState: BirdAudioUIState
     let waveform: [CGFloat]
     
-    private let containerHeight: CGFloat = 80
-
+    private let strictHeight: CGFloat = 64
+    
     var body: some View {
-        ZStack {
-            if case .downloading = audioState {
-                VStack(spacing: 8) {
-                    WaveformBarsView(samples: Array(repeating: 0.2, count: 40))
-                        .opacity(0.15)
-                        .redacted(reason: .placeholder)
-                    
+            ZStack {
+                switch audioState {
+                case .downloading:
                     ProgressView()
                         .controlSize(.small)
+                
+                case .ready, .playing, .paused:
+                    if waveform.isEmpty {
+                        WaveformBarsView(samples: Array(repeating: 0.1, count: 40))
+                            .opacity(0.1)
+                    } else {
+                        WaveformBarsView(samples: waveform)
+                    }
+                
+                default:
+                    Color.clear
                 }
-            } else if waveform.isEmpty {
-                Color.clear.frame(height: containerHeight)
-            } else {
-                WaveformBarsView(samples: waveform)
-                    .transition(.opacity.animation(.easeInOut))
             }
+            .frame(height: strictHeight)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, BirdSpacing.screenHorizontal)
         }
-        .frame(height: containerHeight)
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, BirdSpacing.screenHorizontal)
-    }
 }
 
 #Preview("Waveform") {
@@ -61,5 +62,4 @@ struct BirdWaveformView: View {
         }
     }
     .padding()
-    .previewLayout(.sizeThatFits)
 }

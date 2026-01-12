@@ -13,9 +13,13 @@ final class AppRouter: ObservableObject,RouterProtocol {
     @Published var path: [AppRoute] = []
     
     func push(_ route : AppRoute){
-        if path.last == route { return }
+        if path.last == route {
+            return
+        }
         path.append(route)
     }
     
-    func pop() { path.popLast() }
+    func pop() {
+        path.popLast()
+    }
 }

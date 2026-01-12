@@ -14,13 +14,13 @@ struct BirdDetailBottomSheet: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-             
+            
             RoundedRectangle(cornerRadius: BirdSpacing.listItemCornerRadius, style: .continuous)
                 .fill(BirdTheme.surfaceWhite)
                 .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: -10)
                 .ignoresSafeArea(edges: .bottom)
-
- 
+            
+            
             VStack(spacing: 0) {
                 BottomSheetGrabber()
                     .padding(.bottom, BirdSpacing.sectionVertical)
@@ -52,7 +52,14 @@ struct BirdDetailBottomSheet: View {
                 BirdWikipediaSection(url: bird.wikipediaURL)
                     .padding(.bottom, 12)
             }
+            .frame(maxWidth: .infinity)
+            .background(
+                BirdTheme.surfaceWhite
+                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                    .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: -10)
+            )
             .fixedSize(horizontal: false, vertical: true)
+            .ignoresSafeArea(edges: .bottom)
         }
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -86,4 +93,5 @@ struct BirdDetailBottomSheet: View {
     }
     .ignoresSafeArea(edges: .bottom)
 }
+
 

@@ -13,7 +13,7 @@ enum BirdLabelStyle {
     case body
     case caption
     case listTitle
-      case listSubtitle
+    case listSubtitle
 }
 
 struct BirdLabel: View {
@@ -31,7 +31,9 @@ struct BirdLabel: View {
 
     var body: some View {
         Text(text)
-            .font(BirdTypography.font(for: style))
+            .font(
+                BirdTypography.font(for: style)
+            )
             .foregroundStyle(BirdTypography.color(for: style))
             .frame(
                 maxWidth: .infinity,

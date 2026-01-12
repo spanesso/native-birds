@@ -28,6 +28,7 @@ struct INatTaxonDTO: Decodable, Sendable {
 struct INatDefaultPhotoDTO: Decodable, Sendable {
     let url: String?
     let medium_url: String?
+    
     let square_url: String?
 }
 
@@ -39,13 +40,15 @@ enum INatMapper {
         else { return nil }
 
         let listUrl = dto.default_photo?.url.flatMap(URL.init(string:))
+        
         let mediumUrl = dto.default_photo?.medium_url.flatMap(URL.init(string:))
 
         return Bird(
             taxonId: id,
-            englishCommonName: dto.english_common_name,
+            englishCommonName:  dto.english_common_name,
             name: name,
-            defaultPhotoUrl: listUrl,
+             defaultPhotoUrl: listUrl,
+            
             defaultPhotoMediumUrl: mediumUrl
         )
     }

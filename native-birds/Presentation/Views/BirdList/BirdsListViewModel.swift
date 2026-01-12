@@ -247,3 +247,19 @@ final class BirdsListViewModel: ObservableObject {
         state = .error(error.localizedDescription)
     }
 }
+
+#if DEBUG
+extension BirdsListViewModel {
+    @MainActor
+    func _setPreview(
+        state: BirdsListUIState,
+        birds: [Bird] = [],
+        canLoadMore: Bool = false
+    ) {
+        self.state = state
+        self.birds = birds
+        self.canLoadMore = canLoadMore
+    }
+}
+#endif
+

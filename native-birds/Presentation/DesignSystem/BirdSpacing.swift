@@ -22,5 +22,9 @@ enum BirdSpacing {
      static let listItemTextSpacing: CGFloat = 6
      static let listItemImageSize: CGFloat = 72
     static let listItemCornerRadius: CGFloat = 18
-       static let listItemImageCornerRadius: CGFloat = 14
+    static let listItemImageCornerRadius: CGFloat = 14
+    
+    static let loadinViewSpacing: CGFloat = 20
+    static let loadinViewSpacingWidth: CGFloat = 260
+    static let loadinViewSpacingHeight: CGFloat = 180
 }

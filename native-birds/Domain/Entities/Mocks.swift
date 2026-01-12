@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import CoreLocation
 import UIKit
 
@@ -15,17 +16,17 @@ final class MockRouter: RouterProtocol {
 }
 
 final class MockRemoteConfig: RemoteConfigProtocol {
-
+    
     private let ready: Bool
-
+    
     init(ready: Bool) {
         self.ready = ready
     }
-
+    
     func activate() async -> Bool {
         return true
     }
-
+    
     func getAPIKeys() async -> APIKeys {
         ready
         ? APIKeys(inatToken: "mock", xenoToken: "mock")
@@ -36,7 +37,7 @@ final class MockRemoteConfig: RemoteConfigProtocol {
 final class MockLocationService: LocationServiceProtocol {
     private let status: LocationAuthorizationStatus
     private let coordinate: CLLocationCoordinate2D
-
+    
     init(
         status: LocationAuthorizationStatus,
         coordinate: CLLocationCoordinate2D = .init(latitude: 6.2106, longitude: -75.5050)
@@ -44,17 +45,17 @@ final class MockLocationService: LocationServiceProtocol {
         self.status = status
         self.coordinate = coordinate
     }
-
+    
     func authorizationStatus() -> LocationAuthorizationStatus { status }
     func requestAuthorization() async -> LocationAuthorizationStatus { status }
     func openAppSettings() { }
-
+    
     func getCurrentCoordinates() async throws -> CLLocationCoordinate2D {
         guard status == .authorized else { throw LocationServiceError.notAuthorized }
         return coordinate
     }
 }
- 
+
 extension Bird {
     static func mock() -> Bird {
         Bird(
@@ -94,7 +95,7 @@ extension Bird {
 }
 
 struct MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
-
+    
     func execute(
         lat: Double,
         lng: Double,
@@ -102,11 +103,11 @@ struct MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
         perPage: Int,
         bearerToken: String
     ) async throws -> PagedResult<Bird> {
-
+        
         let birds = Bird.mockList()
-
+        
         let hasMore = (page * perPage) < 100
-
+        
         return PagedResult(
             items: birds,
             hasMore: hasMore
@@ -120,3 +121,30 @@ struct MockBirdImageCache: BirdImageCacheProtocol {
     func image(for url: URL) -> UIImage? { nil }
     func save(_ image: UIImage, for url: URL) {}
 }
+#if DEBUG
+
+
+
+@MainActor
+func makeBirdsListViewModel(
+    state: BirdsListUIState,
+    birds: [Bird] = [],
+    canLoadMore: Bool = false
+) -> BirdsListViewModel {
+
+    let vm = BirdsListViewModel(
+        locationService: MockLocationService(status: .authorized),
+        remoteConfig: MockRemoteConfig(ready: true),
+        fetchNearbyBirds: MockFetchNearbyBirdsUseCase()
+    )
+
+    vm._setPreview(
+        state: state,
+        birds: birds,
+        canLoadMore: canLoadMore
+    )
+
+    return vm
+}
+
+#endif

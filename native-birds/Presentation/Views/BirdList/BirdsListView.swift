@@ -36,10 +36,10 @@ struct BirdsListView: View {
                                         viewModel.loadNextPageIfNeeded(currentItem: bird)
                                     }
                             }
-
+                            
                             footerPaginationView
                         }
-
+                        
                         .padding(.bottom, 16)
                     }
                 }
@@ -49,29 +49,25 @@ struct BirdsListView: View {
                 
                 
             case .idle, .loading:
-                VStack(spacing: 12) {
-                    ProgressView()
-                    BirdLabel(text: AppCopy.BirdList.BirdListViewCopy.loading, style: .body)
-                }
-                
+                BirdsListLoadingView(
+                        text: AppCopy.BirdList.BirdListViewCopy.loading
+                    )
                 
             case .empty:
-                VStack(spacing: 10) {
-                    BirdLabel(text: AppCopy.BirdList.BirdListViewCopy.empty, style: .body)
-                    BirdButton(title: AppCopy.Global.retry, state: .normal) {
+                BirdsListFeedbackView(
+                        text: AppCopy.BirdList.BirdListViewCopy.empty,
+                        actionTitle: AppCopy.Global.retry
+                    ) {
                         Task { await viewModel.loadFirstPage() }
                     }
-                    .padding(.horizontal, BirdSpacing.screenHorizontal)
-                }
                 
             case .error(let message):
-                VStack(spacing: 10) {
-                    BirdLabel(text: message, style: .body)
-                    BirdButton(title: AppCopy.Global.retry, state: .normal) {
-                        Task { await viewModel.loadFirstPage() }
-                    }
-                    .padding(.horizontal, BirdSpacing.screenHorizontal)
-                }
+                BirdsListFeedbackView(
+                       text: message,
+                       actionTitle: AppCopy.Global.retry
+                   ) {
+                       Task { await viewModel.loadFirstPage() }
+                   }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -79,21 +75,77 @@ struct BirdsListView: View {
     }
     
     @ViewBuilder
-        private var footerPaginationView: some View {
-            if viewModel.canLoadMore {
-                if viewModel.state == .loadingMore {
-                    ProgressView()
-                        .padding(.vertical, 14)
-                } else {
-                    BirdButton(title: AppCopy.Global.retry, state: .normal) {
-                        Task { await viewModel.loadNextPage() }
-                    }
-                    .padding(.horizontal, BirdSpacing.screenHorizontal)
-                    .padding(.vertical, 8)
-                    .opacity(0.0001)
-                }
+    private var footerPaginationView: some View {
+        if viewModel.canLoadMore {
+            if viewModel.state == .loadingMore {
+                ProgressView()
+                    .padding(.vertical, 14)
             } else {
-                EmptyView()
+                BirdButton(title: AppCopy.Global.retry, state: .normal) {
+                    Task { await viewModel.loadNextPage() }
+                }
+                .padding(.horizontal, BirdSpacing.screenHorizontal)
+                .padding(.vertical, 8)
+                .opacity(0.0001)
             }
+        } else {
+            EmptyView()
         }
+    }
 }
+
+#if DEBUG
+
+#Preview("Idle") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(state: .idle),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Loading") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(state: .loading),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Loaded") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(
+            state: .loaded,
+            birds: Bird.mockList(),
+            canLoadMore: true
+        ),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Loading More") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(
+            state: .loadingMore,
+            birds: Bird.mockList(),
+            canLoadMore: true
+        ),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Empty") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(state: .empty),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Error") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(
+            state: .error("Something went wrong")
+        ),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#endif

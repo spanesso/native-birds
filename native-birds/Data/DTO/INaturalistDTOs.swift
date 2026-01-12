@@ -21,8 +21,9 @@ struct INatObservationResultDTO: Decodable, Sendable {
 struct INatTaxonDTO: Decodable, Sendable {
     let id: Int?
     let name: String?
-    let english_common_name: String?
+    let preferred_common_name: String?
     let default_photo: INatDefaultPhotoDTO?
+    let wikipedia_url: String?
 }
 
 struct INatDefaultPhotoDTO: Decodable, Sendable {
@@ -32,24 +33,34 @@ struct INatDefaultPhotoDTO: Decodable, Sendable {
     let square_url: String?
 }
 
+
 enum INatMapper {
+
     static func map(dto: INatTaxonDTO) -> Bird? {
         guard
             let id = dto.id,
             let name = dto.name
-        else { return nil }
+        else {
+            return nil
+        }
 
-        let listUrl = dto.default_photo?.url.flatMap(URL.init(string:))
-        
-        let mediumUrl = dto.default_photo?.medium_url.flatMap(URL.init(string:))
+        let listUrl = dto.default_photo?.square_url
+            .flatMap(URL.init(string:))
+
+        let mediumUrl = dto.default_photo?.medium_url
+            .flatMap(URL.init(string:))
+
+        let wikiUrl = dto.wikipedia_url
+            .flatMap(URL.init(string:))
 
         return Bird(
             taxonId: id,
-            englishCommonName:  dto.english_common_name,
+            preferredCommonName: dto.preferred_common_name,
             name: name,
-             defaultPhotoUrl: listUrl,
-            
-            defaultPhotoMediumUrl: mediumUrl
+            defaultPhotoUrl: listUrl,
+            defaultPhotoMediumUrl: mediumUrl,
+            wikipediaURL: wikiUrl
         )
     }
 }
+

@@ -20,6 +20,7 @@ struct BirdListItem: View {
 
             BirdRemoteImage(
                 url: bird.defaultPhotoUrl,
+                hugeImage: false,
                 cache: cache
             )
             .frame(
@@ -38,13 +39,13 @@ struct BirdListItem: View {
                 spacing: BirdSpacing.listItemTextSpacing
             ) {
                 BirdLabel(
-                    text: bird.englishCommonName ?? bird.name,
+                    text: bird.name,
                     style: .listTitle
                 )
                 .lineLimit(2)
 
                 BirdLabel(
-                    text: bird.name,
+                    text: bird.preferredCommonName ?? bird.name,
                     style: .listSubtitle
                 )
                 .lineLimit(1)

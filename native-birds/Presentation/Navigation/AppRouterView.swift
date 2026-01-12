@@ -32,13 +32,24 @@ struct AppRouterView: View {
                             remoteConfig: container.remoteConfig,
                             fetchNearbyBirds: container.fetchNearbyBirdsUseCase
                         ),
-                        imageCache: container.imageCache
+                        imageCache: container.imageCache,
+                        router: container.router
                     )
                 case .birdDetail(let bird):
-                    BirdTheme.surfaceWhite
-                        .ignoresSafeArea()
-                        .overlay(Text("Detail: \(bird.englishCommonName ?? bird.name)"))
-                        .navigationBarBackButtonHidden(true)
+                    BirdDetailView(
+                        bird: bird,
+                        imageCache: container.imageCache,
+                        viewModel: BirdDetailViewModel(
+                            bird: bird,
+                            remoteConfig: container.remoteConfig,
+                            fetchRecording: container.fetchBirdRecordingUseCase,
+                            audioCache: container.audioCache,
+                            downloader: container.audioDownloader
+                        ),
+                        onBack: {
+                            container.router.pop()
+                        }
+                    )
                 }
             }
         }

@@ -57,38 +57,43 @@ final class MockLocationService: LocationServiceProtocol {
 }
 
 extension Bird {
+
     static func mock() -> Bird {
         Bird(
             taxonId: 1,
-            englishCommonName: "Peregrine Falcon",
-            name: "Peregrine Falcon",
+            preferredCommonName: "Peregrine Falcon",
+            name: "Falco peregrinus",
             defaultPhotoUrl: nil,
-            defaultPhotoMediumUrl: nil
+            defaultPhotoMediumUrl: nil,
+            wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/Peregrine_falcon")
         )
     }
-    
+
     static func mockList() -> [Bird] {
         [
             Bird(
                 taxonId: 1,
-                englishCommonName: "Inca Jay",
+                preferredCommonName: "Inca Jay",
                 name: "Cyanocorax yncas",
                 defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil
+                defaultPhotoMediumUrl: nil,
+                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
             ),
             Bird(
                 taxonId: 2,
-                englishCommonName: "Great Kiskadee",
+                preferredCommonName: "Great Kiskadee",
                 name: "Pitangus sulphuratus",
                 defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil
+                defaultPhotoMediumUrl: nil,
+                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
             ),
             Bird(
                 taxonId: 3,
-                englishCommonName: "Peregrine Falcon",
-                name: "Peregrine Falcon",
+                preferredCommonName: "Peregrine Falcon",
+                name: "Falco peregrinus",
                 defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil
+                defaultPhotoMediumUrl: nil,
+                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
             )
         ]
     }
@@ -113,6 +118,11 @@ struct MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
             hasMore: hasMore
         )
     }
+}
+
+class MockImageCache: BirdImageCacheProtocol {
+    func image(for url: URL) async -> UIImage? { nil }
+    func store(_ image: UIImage, for url: URL) async {}
 }
 
 struct MockBirdImageCache: BirdImageCacheProtocol {
@@ -147,8 +157,26 @@ final class MockLocationServiceTests: LocationServiceProtocol {
 }
 
 
+struct MockFetchRecording: FetchBirdRecordingUseCaseProtocol {
+    func execute(scientificName: String, apiKey: String) async throws -> BirdRecording? {
+        return BirdRecording(
+            id: "1", genus: "Pitangus", species: "sulphuratus",
+            commonName: "Great Kiskadee", audioUrl: "",
+            quality: "A", type: "sound", duration: "30"
+        )
+    }
+}
 
+struct MockAudioCache: BirdAudioCacheProtocol {
+    func fileURL(for remoteURL: URL) async -> URL? { nil }
+    func storeDownloadedFile(from tempURL: URL, remoteURL: URL) async throws -> URL { tempURL }
+}
 
+struct MockDownloader: AudioDownloadServiceProtocol {
+    func download(remoteURL: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws -> URL {
+        return URL(fileURLWithPath: "")
+    }
+}
 
 
 #if DEBUG

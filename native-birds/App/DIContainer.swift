@@ -16,31 +16,58 @@ final class DIContainer{
     let fetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol
     let imageCache: BirdImageCacheProtocol
     
+    let xenoRepo: XenoCantoRepositoryProtocol
+    let fetchBirdRecordingUseCase: FetchBirdRecordingUseCaseProtocol
+    let audioCache: BirdAudioCacheProtocol
+    let audioDownloader: AudioDownloadServiceProtocol
+    
     private init(
         router: AppRouter,
+        
         remoteConfig: RemoteConfigProtocol,
         locationService: LocationServiceProtocol,
         birdsRepository: BirdsRepositoryProtocol,
-        fetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol,
-        imageCache: BirdImageCacheProtocol
+        fetchNearbyBirdsUseCase:  FetchNearbyBirdsUseCaseProtocol,
+        
+        imageCache: BirdImageCacheProtocol,
+        
+        xenoRepo: XenoCantoRepositoryProtocol,
+        fetchBirdRecordingUseCase: FetchBirdRecordingUseCaseProtocol,
+        audioCache: BirdAudioCacheProtocol,
+        audioDownloader: AudioDownloadServiceProtocol
     ) {
         self.router = router
         self.remoteConfig = remoteConfig
+        
         self.locationService = locationService
         self.birdsRepository = birdsRepository
+        
         self.fetchNearbyBirdsUseCase = fetchNearbyBirdsUseCase
         self.imageCache = imageCache
+        
+        
+        self.xenoRepo = xenoRepo
+        self.fetchBirdRecordingUseCase = fetchBirdRecordingUseCase
+        self.audioCache = audioCache
+        self.audioDownloader = audioDownloader
     }
     
     static func construct() -> DIContainer {
         let router = AppRouter()
+        
         let remoteConfig = RemoteConfigRepository()
         let locationService = LocationService()
         
-        let client = URLSessionNetworkClient()
+        let client =  URLSessionNetworkClient()
         let birdsRepo = BirdsRepository(client: client)
+        
         let useCase = FetchNearbyBirdsUseCase(repo: birdsRepo)
         let cache = BirdImageCache()
+        
+        let xenoRepo = XenoCantoRepository(client: client)
+        let fetchRecording = FetchBirdRecordingUseCase(repo: xenoRepo)
+        let audioCache = BirdAudioCache()
+        let downloader = AudioDownloadService()
         
         return DIContainer(
             router: router,
@@ -48,7 +75,11 @@ final class DIContainer{
             locationService: locationService,
             birdsRepository: birdsRepo,
             fetchNearbyBirdsUseCase: useCase,
-            imageCache: cache
+            imageCache: cache,
+            xenoRepo: xenoRepo,
+            fetchBirdRecordingUseCase: fetchRecording,
+            audioCache: audioCache,
+            audioDownloader: downloader
         )
     }
 }

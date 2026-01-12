@@ -11,6 +11,7 @@ struct BirdsListView: View {
     
     @StateObject var viewModel: BirdsListViewModel
     let imageCache: BirdImageCacheProtocol
+    let router: RouterProtocol
     
     var body: some View {
         ZStack {
@@ -20,27 +21,32 @@ struct BirdsListView: View {
                 
             case .loaded, .loadingMore:
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: BirdSpacing.screenHorizontal) {
                         
-                        Text(AppCopy.BirdList.BirdListViewCopy.title)
-                            .font(.system(size: 40, weight: .heavy))
-                            .foregroundStyle(BirdTheme.deepBlack)
-                            .padding(.horizontal, BirdSpacing.screenHorizontal)
-                            .padding(.top, 6)
+                        BirdLabel(
+                            text: AppCopy.BirdList.BirdListViewCopy.title,
+                            style: .title
+                        ).padding(.horizontal, BirdSpacing.screenHorizontal)
+                        .padding(.top, 6)
                         
-                        LazyVStack(spacing: 14) {
+                      
+                        
+                        LazyVStack(spacing: BirdSpacing.listItemPadding) {
                             ForEach(viewModel.birds, id: \.name) { bird in
                                 BirdListItem(bird: bird, cache: imageCache)
                                     .padding(.horizontal, BirdSpacing.screenHorizontal)
                                     .onAppear {
                                         viewModel.loadNextPageIfNeeded(currentItem: bird)
                                     }
+                                    .onTapGesture {
+                                        router.push(.birdDetail(bird: bird))
+                                    }
                             }
                             
                             footerPaginationView
                         }
                         
-                        .padding(.bottom, 16)
+                        .padding(.bottom, BirdSpacing.screenHorizontal)
                     }
                 }
                 .refreshable {
@@ -50,24 +56,24 @@ struct BirdsListView: View {
                 
             case .idle, .loading:
                 BirdsListLoadingView(
-                        text: AppCopy.BirdList.BirdListViewCopy.loading
-                    )
+                    text: AppCopy.BirdList.BirdListViewCopy.loading
+                )
                 
             case .empty:
                 BirdsListFeedbackView(
-                        text: AppCopy.BirdList.BirdListViewCopy.empty,
-                        actionTitle: AppCopy.Global.retry
-                    ) {
-                        Task { await viewModel.loadFirstPage() }
-                    }
+                    text: AppCopy.BirdList.BirdListViewCopy.empty,
+                    actionTitle: AppCopy.Global.retry
+                ) {
+                    Task { await viewModel.loadFirstPage() }
+                }
                 
             case .error(let message):
                 BirdsListFeedbackView(
-                       text: message,
-                       actionTitle: AppCopy.Global.retry
-                   ) {
-                       Task { await viewModel.loadFirstPage() }
-                   }
+                    text: message,
+                    actionTitle: AppCopy.Global.retry
+                ) {
+                    Task { await viewModel.loadFirstPage() }
+                }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -99,14 +105,16 @@ struct BirdsListView: View {
 #Preview("Idle") {
     BirdsListView(
         viewModel: makeBirdsListViewModel(state: .idle),
-        imageCache: MockBirdImageCache()
+        imageCache: MockBirdImageCache(),
+        router: MockRouter()
     )
 }
 
 #Preview("Loading") {
     BirdsListView(
         viewModel: makeBirdsListViewModel(state: .loading),
-        imageCache: MockBirdImageCache()
+        imageCache: MockBirdImageCache(),
+        router: MockRouter()
     )
 }
 
@@ -117,7 +125,8 @@ struct BirdsListView: View {
             birds: Bird.mockList(),
             canLoadMore: true
         ),
-        imageCache: MockBirdImageCache()
+        imageCache: MockBirdImageCache(),
+        router: MockRouter()
     )
 }
 
@@ -128,14 +137,16 @@ struct BirdsListView: View {
             birds: Bird.mockList(),
             canLoadMore: true
         ),
-        imageCache: MockBirdImageCache()
+        imageCache: MockBirdImageCache(),
+        router: MockRouter()
     )
 }
 
 #Preview("Empty") {
     BirdsListView(
         viewModel: makeBirdsListViewModel(state: .empty),
-        imageCache: MockBirdImageCache()
+        imageCache: MockBirdImageCache(),
+        router: MockRouter()
     )
 }
 
@@ -144,7 +155,8 @@ struct BirdsListView: View {
         viewModel: makeBirdsListViewModel(
             state: .error("Something went wrong")
         ),
-        imageCache: MockBirdImageCache()
+        imageCache: MockBirdImageCache(),
+        router: MockRouter()
     )
 }
 

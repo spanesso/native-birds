@@ -93,8 +93,8 @@ struct SplashView: View {
     SplashView(
         viewModel: SplashViewModel(
             router: MockRouter(),
-            remoteConfig: MockRemoteConfig(ready: true),
-            locationService: MockLocationService(status: .notDetermined)
+            remoteConfig: MockRemoteConfig(),
+            locationService: MockLocationService()
         )
     )
 }

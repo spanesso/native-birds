@@ -9,29 +9,52 @@ import XCTest
 @testable import native_birds
 
 final class AppCopyTests: XCTestCase {
-
-    func test_globalCopy_stringsAreNotEmpty() {
-        XCTAssertFalse(AppCopy.Global.cancel.isEmpty, "Global cancel string should not be empty")
-        XCTAssertFalse(AppCopy.Global.retry.isEmpty, "Global retry string should not be empty")
+    
+    func test_global_strings_areNotEmpty() {
+        XCTAssertFalse(AppCopy.Global.cancel.isEmpty)
+        XCTAssertFalse(AppCopy.Global.retry.isEmpty)
+        
+        XCTAssertEqual(AppCopy.Global.cancel, "Cancel")
+        XCTAssertEqual(AppCopy.Global.retry, "Retry")
     }
-
-    func test_splashCopy_titlesAndMessagesAreCorrect() {
+    
+    func test_error_strings_containExpectedMessages() {
+        XCTAssertTrue(AppCopy.Error.missingINaturalistToken.contains("iNaturalist"))
+        XCTAssertTrue(AppCopy.Error.missingLocation.contains("location"))
+    }
+    
+    func test_splash_view_copy_isCorrect() {
         XCTAssertEqual(AppCopy.Splash.SplashViewCopy.title, "Native Birds")
-        XCTAssertEqual(AppCopy.Splash.Actions.startAdventure, "Start Adventure")
-        
-        XCTAssertGreaterThan(AppCopy.Splash.RemoteConfig.missingKeysMessage.count, 20, "Remote config error message should be descriptive")
+        XCTAssertEqual(AppCopy.Splash.SplashViewCopy.subTitle, "Listen to the world of birds")
     }
-
-    func test_splashLocationCopy_hasRequiredInformation() {
-        let title = AppCopy.Splash.Location.permissionRequiredTitle
-        let message = AppCopy.Splash.Location.permissionRequiredMessage
-        
-        XCTAssertFalse(title.isEmpty)
-        XCTAssertTrue(message.contains("GPS"), "Location message should mention GPS for user clarity")
+    
+    func test_remoteConfig_error_messages_areValid() {
+        XCTAssertFalse(AppCopy.Splash.RemoteConfig.missingKeysTitle.isEmpty)
+        XCTAssertTrue(AppCopy.Splash.RemoteConfig.missingKeysMessage.contains("Firebase"))
     }
-
-    func test_birdListCopy_isCorrect() {
+    
+    func test_location_permission_copy_isInformative() {
+        XCTAssertEqual(AppCopy.Splash.Location.permissionRequiredTitle, "Location Permission Required")
+        XCTAssertTrue(AppCopy.Splash.Location.permissionRequiredMessage.contains("GPS"))
+    }
+    
+    func test_birdList_ui_copy_isCorrect() {
         XCTAssertEqual(AppCopy.BirdList.BirdListViewCopy.title, "Nearby Birds")
-        XCTAssertEqual(AppCopy.BirdList.BirdListViewCopy.subTitle, "Discover and listen to the world of birds")
+        XCTAssertFalse(AppCopy.BirdList.BirdListViewCopy.loading.isEmpty)
+        XCTAssertEqual(AppCopy.BirdList.BirdListViewCopy.empty, "No birds found nearby.")
+    }
+    
+    func test_splash_actions_isCorrect() {
+        XCTAssertEqual(AppCopy.Splash.Actions.startAdventure, "Start Adventure")
+    }
+    
+    func test_birdDetail_error_strings_areCorrect() {
+        XCTAssertEqual(AppCopy.BirdDetail.BirdDetailViewCopy.errorAPIKey, "Missing Xeno-canto API key from Remote Config.")
+        XCTAssertEqual(AppCopy.BirdDetail.BirdDetailViewCopy.errorAudio, "No audio recording found for this bird.")
+    }
+    
+    func test_birdDetail_strings_areNotEmpty() {
+        XCTAssertFalse(AppCopy.BirdDetail.BirdDetailViewCopy.errorAPIKey.isEmpty)
+        XCTAssertFalse(AppCopy.BirdDetail.BirdDetailViewCopy.errorAudio.isEmpty)
     }
 }

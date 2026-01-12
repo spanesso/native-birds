@@ -15,49 +15,50 @@ final class MockRouter: RouterProtocol {
     func push(_ route: AppRoute) { }
 }
 
-final class MockRemoteConfig: RemoteConfigProtocol {
-    
-    private let ready: Bool
-    
-    init(ready: Bool) {
-        self.ready = ready
-    }
+final class MockRemoteConfig: RemoteConfigProtocol, @unchecked Sendable {
+    var activateResult = true
+    var apiKeys = APIKeys(inatToken: "mock", xenoToken: "mock")
+    var activateCalled = false
     
     func activate() async -> Bool {
-        return true
+        activateCalled = true
+        return activateResult
     }
     
     func getAPIKeys() async -> APIKeys {
-        ready
-        ? APIKeys(inatToken: "mock", xenoToken: "mock")
-        : APIKeys(inatToken: nil, xenoToken: nil)
+        return apiKeys
     }
 }
 
-final class MockLocationService: LocationServiceProtocol {
-    private let status: LocationAuthorizationStatus
-    private let coordinate: CLLocationCoordinate2D
+final class MockLocationService: LocationServiceProtocol, @unchecked Sendable {
+    var status: LocationAuthorizationStatus = .notDetermined
+    var coordinate = CLLocationCoordinate2D(latitude: 6.2106, longitude: -75.5050)
     
-    init(
-        status: LocationAuthorizationStatus,
-        coordinate: CLLocationCoordinate2D = .init(latitude: 6.2106, longitude: -75.5050)
-    ) {
-        self.status = status
-        self.coordinate = coordinate
+    var requestAuthorizationCalled = false
+    var openAppSettingsCalled = false
+
+    func authorizationStatus() -> LocationAuthorizationStatus {
+        return status
     }
-    
-    func authorizationStatus() -> LocationAuthorizationStatus { status }
-    func requestAuthorization() async -> LocationAuthorizationStatus { status }
-    func openAppSettings() { }
-    
+
+    func requestAuthorization() async -> LocationAuthorizationStatus {
+        requestAuthorizationCalled = true
+        return status
+    }
+
+    func openAppSettings() {
+        openAppSettingsCalled = true
+    }
+
     func getCurrentCoordinates() async throws -> CLLocationCoordinate2D {
-        guard status == .authorized else { throw LocationServiceError.notAuthorized }
+        if status != .authorized {
+            throw LocationServiceError.notAuthorized
+        }
         return coordinate
     }
 }
 
 extension Bird {
-
     static func mock() -> Bird {
         Bird(
             taxonId: 1,
@@ -71,52 +72,16 @@ extension Bird {
 
     static func mockList() -> [Bird] {
         [
-            Bird(
-                taxonId: 1,
-                preferredCommonName: "Inca Jay",
-                name: "Cyanocorax yncas",
-                defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil,
-                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
-            ),
-            Bird(
-                taxonId: 2,
-                preferredCommonName: "Great Kiskadee",
-                name: "Pitangus sulphuratus",
-                defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil,
-                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
-            ),
-            Bird(
-                taxonId: 3,
-                preferredCommonName: "Peregrine Falcon",
-                name: "Falco peregrinus",
-                defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil,
-                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
-            )
+            Bird(taxonId: 1, preferredCommonName: "Inca Jay", name: "Cyanocorax yncas", defaultPhotoUrl: nil, defaultPhotoMediumUrl: nil, wikipediaURL: nil),
+            Bird(taxonId: 2, preferredCommonName: "Great Kiskadee", name: "Pitangus sulphuratus", defaultPhotoUrl: nil, defaultPhotoMediumUrl: nil, wikipediaURL: nil)
         ]
     }
 }
 
-struct MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
-    
-    func execute(
-        lat: Double,
-        lng: Double,
-        page: Int,
-        perPage: Int,
-        bearerToken: String
-    ) async throws -> PagedResult<Bird> {
-        
-        let birds = Bird.mockList()
-        
-        let hasMore = (page * perPage) < 100
-        
-        return PagedResult(
-            items: birds,
-            hasMore: hasMore
-        )
+final class MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
+    var resultToReturn: PagedResult<Bird>?
+    func execute(lat: Double, lng: Double, page: Int, perPage: Int, bearerToken: String) async throws -> PagedResult<Bird> {
+        return resultToReturn ?? PagedResult(items: Bird.mockList(), hasMore: false)
     }
 }
 
@@ -134,20 +99,20 @@ struct MockBirdImageCache: BirdImageCacheProtocol {
 
 
 final class MockLocationServiceTests: LocationServiceProtocol {
-
+    
     var status: LocationAuthorizationStatus = .authorized
     var coordinate = CLLocationCoordinate2D(latitude: 6.21, longitude: -75.50)
-
+    
     func authorizationStatus() -> LocationAuthorizationStatus {
         status
     }
-
+    
     func requestAuthorization() async -> LocationAuthorizationStatus {
         status
     }
-
+    
     func openAppSettings() {}
-
+    
     func getCurrentCoordinates() async throws -> CLLocationCoordinate2D {
         if status != .authorized {
             throw LocationServiceError.notAuthorized
@@ -167,9 +132,42 @@ struct MockFetchRecording: FetchBirdRecordingUseCaseProtocol {
     }
 }
 
-struct MockAudioCache: BirdAudioCacheProtocol {
-    func fileURL(for remoteURL: URL) async -> URL? { nil }
-    func storeDownloadedFile(from tempURL: URL, remoteURL: URL) async throws -> URL { tempURL }
+final class MockAudioCache: BirdAudioCacheProtocol, @unchecked Sendable {
+    var fileURLToReturn: URL?
+    var storedURLToReturn: URL?
+    var storeCalled = false
+
+    func fileURL(for remoteURL: URL) async -> URL? {
+        return fileURLToReturn
+    }
+
+    func storeDownloadedFile(from tempURL: URL, remoteURL: URL) async throws -> URL {
+        storeCalled = true
+        return storedURLToReturn ?? tempURL
+    }
+}
+
+final class MockFetchRecordingUseCase: FetchBirdRecordingUseCaseProtocol {
+    var recordingToReturn: BirdRecording?
+    var shouldThrow = false
+    
+    func execute(scientificName: String, apiKey: String) async throws -> BirdRecording? {
+        if shouldThrow {
+            throw NetworkError.unknown
+        }
+        return recordingToReturn
+    }
+}
+
+final class MockAudioDownloadService: AudioDownloadServiceProtocol {
+    var urlToReturn: URL!
+    var downloadCalled = false
+    
+    func download(remoteURL: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws -> URL {
+        downloadCalled = true
+        onProgress(1.0)
+        return urlToReturn
+    }
 }
 
 struct MockDownloader: AudioDownloadServiceProtocol {
@@ -180,20 +178,20 @@ struct MockDownloader: AudioDownloadServiceProtocol {
 
 final class MockURLProtocol: URLProtocol {
     static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data?))?
-
+    
     override class func canInit(with request: URLRequest) -> Bool {
         return true
     }
-
+    
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
-
+    
     override func startLoading() {
         guard let handler = MockURLProtocol.requestHandler else {
             return
         }
-
+        
         do {
             let (response, data) = try handler(request)
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
@@ -205,15 +203,22 @@ final class MockURLProtocol: URLProtocol {
             client?.urlProtocol(self, didFailWithError: error)
         }
     }
-
+    
     override func stopLoading() {}
 }
 
 
+extension BirdRecording {
+    static func mock() -> BirdRecording {
+        BirdRecording(
+            id: "1", genus: "Test", species: "Test",
+            commonName: "Test Bird", audioUrl: "https://test.com/audio.mp3",
+            quality: "A", type: "sound", duration: "10"
+        )
+    }
+}
 
 #if DEBUG
-
-
 
 @MainActor
 func makeBirdsListViewModel(
@@ -221,19 +226,26 @@ func makeBirdsListViewModel(
     birds: [Bird] = [],
     canLoadMore: Bool = false
 ) -> BirdsListViewModel {
-
+    
+    let mockLocation = MockLocationService()
+    let mockRemote = MockRemoteConfig()
+    let mockUseCase = MockFetchNearbyBirdsUseCase()
+    
+    mockLocation.status = .authorized
+    mockRemote.activateResult = true
+    
     let vm = BirdsListViewModel(
-        locationService: MockLocationService(status: .authorized),
-        remoteConfig: MockRemoteConfig(ready: true),
-        fetchNearbyBirds: MockFetchNearbyBirdsUseCase()
+        locationService: mockLocation,
+        remoteConfig: mockRemote,
+        fetchNearbyBirds: mockUseCase
     )
-
+    
     vm._setPreview(
         state: state,
         birds: birds,
         canLoadMore: canLoadMore
     )
-
+    
     return vm
 }
 

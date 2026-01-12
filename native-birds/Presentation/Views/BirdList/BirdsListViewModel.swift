@@ -203,8 +203,6 @@ final class BirdsListViewModel: ObservableObject {
     }
 }
 
-
-#if DEBUG
 extension BirdsListViewModel {
     @MainActor
     func _setPreview(
@@ -217,5 +215,3 @@ extension BirdsListViewModel {
         self.canLoadMore = canLoadMore
     }
 }
-#endif
-

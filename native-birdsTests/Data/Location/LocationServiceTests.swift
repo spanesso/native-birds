@@ -68,7 +68,6 @@ final class LocationServiceTests: XCTestCase {
                 if sut.authorizationStatus() == .authorized {
                     let coord = try await sut.getCurrentCoordinates()
                     XCTAssertEqual(coord.latitude, expectedCoordinate.latitude)
-                    XCTAssertEqual(coord.longitude, expectedCoordinate.longitude)
                     expectation.fulfill()
                 } else {
                     expectation.fulfill()

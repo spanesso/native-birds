@@ -74,7 +74,7 @@ struct BirdDetailBottomSheet: View {
     
     let viewModel = BirdDetailViewModel(
         bird: mockBird,
-        remoteConfig: MockRemoteConfig(ready: true),
+        remoteConfig: MockRemoteConfig(),
         fetchRecording: MockFetchRecording(),
         audioCache: MockAudioCache(),
         downloader: MockDownloader()
@@ -82,7 +82,7 @@ struct BirdDetailBottomSheet: View {
     
     let audioPlayer = BirdAudioPlayer()
     
-    return ZStack(alignment: .bottom) {
+    ZStack(alignment: .bottom) {
         Color.black.opacity(0.6)
             .ignoresSafeArea()
         

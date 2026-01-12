@@ -10,40 +10,38 @@ import SwiftUI
 @testable import native_birds
 
 final class BirdTypographyTests: XCTestCase {
-    func test_fontStyleSuccessValues() {
-        let styles: [(BirdLabelStyle, CGFloat)] = [
-            (.title, 52),
-            (.subtitle, 20),
-            (.body, 16),
-            (.caption, 13)
-        ]
-        
-        for (style, expectedSize) in styles {
-            let font = BirdTypography.font(for: style)
-            XCTAssertEqual(font, .system(size: expectedSize, weight: getExpectedWeight(for: style)),
-                           "Font size for \(style) should be \(expectedSize)")
-        }
+    
+    func test_font_returnsCorrectSizes() {
+        XCTAssertEqual(BirdTypography.font(for: .title), .system(size: 52, weight: .heavy))
+        XCTAssertEqual(BirdTypography.font(for: .subtitle), .system(size: 20, weight: .regular))
+        XCTAssertEqual(BirdTypography.font(for: .caption), .system(size: 13, weight: .regular))
     }
-
-    func test_colorStyleSuccessValues() {
+    
+    func test_color_returnsExpectedValues() {
         XCTAssertEqual(BirdTypography.color(for: .title), .white)
         XCTAssertEqual(BirdTypography.color(for: .body), BirdTheme.deepBlack)
-        
-        let expectedSubtitleColor = Color.white.opacity(0.85)
-        XCTAssertEqual(BirdTypography.color(for: .subtitle), expectedSubtitleColor)
+        XCTAssertEqual(BirdTypography.color(for: .listSubtitle), BirdTheme.primaryGreen)
     }
-
-    func test_alignmentForStyleSuccesss() {
+    
+    func test_color_hasCorrectOpacities() {
+        let subtitleColor = BirdTypography.color(for: .subtitle)
+        let captionColor = BirdTypography.color(for: .caption)
+        
+        XCTAssertEqual(subtitleColor, .white.opacity(0.85))
+        XCTAssertEqual(captionColor, BirdTheme.deepBlack.opacity(0.7))
+    }
+    
+    func test_alignment_mappingsAreCorrect() {
         XCTAssertEqual(BirdTypography.alignment(for: .title), .center)
         XCTAssertEqual(BirdTypography.alignment(for: .subtitle), .center)
         XCTAssertEqual(BirdTypography.alignment(for: .body), .leading)
-        XCTAssertEqual(BirdTypography.alignment(for: .caption), .leading)
+        XCTAssertEqual(BirdTypography.alignment(for: .listTitle), .leading)
     }
-
-    private func getExpectedWeight(for style: BirdLabelStyle) -> Font.Weight {
-        switch style {
-            case .title: return .heavy
-            default: return .regular
-        }
+    
+    func test_textAlignment_mappingsAreCorrect() {
+        XCTAssertEqual(BirdTypography.textAlignment(for: .title), .center)
+        XCTAssertEqual(BirdTypography.textAlignment(for: .subtitle), .center)
+        XCTAssertEqual(BirdTypography.textAlignment(for: .body), .leading)
+        XCTAssertEqual(BirdTypography.textAlignment(for: .caption), .leading)
     }
 }

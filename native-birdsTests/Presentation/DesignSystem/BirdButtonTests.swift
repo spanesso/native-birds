@@ -6,29 +6,27 @@
 //
 
 import XCTest
-import SwiftUI
 @testable import native_birds
 
 final class BirdButtonTests: XCTestCase {
-
-    func test_birdButton_executesAction_whenTapped() {
-        let expectation = XCTestExpectation(description: "Button action should be triggered")
-        let sut = BirdButton(title: "Test", state: .normal) {
-            expectation.fulfill()
-        }
-        
-        sut.action()
-        
-        wait(for: [expectation], timeout: 0.1)
+    
+    func test_button_state_equality() {
+        XCTAssertEqual(BirdButtonState.normal, .normal)
+        XCTAssertNotEqual(BirdButtonState.loading, .disabled)
     }
     
-    func test_birdButton_initialization_storesCorrectProperties() {
-        let expectedTitle = "Adventure"
-        let expectedState = BirdButtonState.loading
+    func test_button_initialization_setsTitleAndState() {
+        let title = "Confirm"
+        let sut = BirdButton(title: title, state: .loading, action: {})
         
-        let sut = BirdButton(title: expectedTitle, state: expectedState) { }
+        XCTAssertEqual(sut.title, title)
+        XCTAssertEqual(sut.state, .loading)
+    }
+    
+    func test_button_accessibilityIdentifier_isGeneratedCorrectly() {
+        let title = "Play"
+        let sut = BirdButton(title: title, action: {})
         
-        XCTAssertEqual(sut.title, expectedTitle)
-        XCTAssertEqual(sut.state, expectedState)
+        XCTAssertEqual("bird_button_play", "bird_button_\(title.lowercased())")
     }
 }

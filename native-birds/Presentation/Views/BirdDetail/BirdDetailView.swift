@@ -55,7 +55,10 @@ struct BirdDetailView: View {
         scientific: "Pitangus sulphuratus"
     )
     
-    let mockRemoteConfig = MockRemoteConfig(ready: true)
+    let mockRemoteConfig = MockRemoteConfig()
+    
+    mockRemoteConfig.apiKeys = APIKeys(inatToken: "mock", xenoToken: "mock")
+    
     let mockImageCache = MockImageCache()
     
     let viewModel = BirdDetailViewModel(

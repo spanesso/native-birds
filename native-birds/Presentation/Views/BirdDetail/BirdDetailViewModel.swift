@@ -55,7 +55,7 @@ final class BirdDetailViewModel: ObservableObject {
             let apiKey = (keys.xenoToken ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             
             guard !apiKey.isEmpty else {
-                state = .error(BirdDetail.BirdDetailViewCopy.errorAPIKey)
+                state = .error(AppCopy.BirdDetail.BirdDetailViewCopy.errorAPIKey)
                 return
             }
             
@@ -68,7 +68,7 @@ final class BirdDetailViewModel: ObservableObject {
             
             guard let recording,
                   let remote = URL(string: recording.audioUrl) else {
-                audioState = .error(BirdDetail.BirdDetailViewCopy.errorAudio)
+                audioState = .error(AppCopy.BirdDetail.BirdDetailViewCopy.errorAudio)
                 return
             }
             

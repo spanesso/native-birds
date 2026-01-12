@@ -20,7 +20,6 @@ enum AppCopy {
     }
     
     enum Error {
-        
         static let missingINaturalistToken =
         "Missing iNaturalist token from Remote Config."
         
@@ -28,9 +27,7 @@ enum AppCopy {
         "Unable to retrieve current location."
         
     }
-    
-    
-    
+
     enum Splash {
         
         enum SplashViewCopy {
@@ -57,50 +54,36 @@ enum AppCopy {
             
             static let permissionRequiredMessage =
             "BirdSongs needs access to your location to show nearby birds. Please enable GPS permissions to continue."
-            
-            
         }
-        
+    
         enum Actions {
-            static let startAdventure =
-            "Start Adventure"
+            static let startAdventure = "Start Adventure"
         }
     }
     
     enum BirdList {
         
         enum BirdListViewCopy {
-            static let title =
-            "Nearby Birds"
+            static let title = "Nearby Birds"
             
-            static let subTitle =
-            "Discover and listen to the world of birds"
+            static let subTitle = "Discover and listen to the world of birds"
             
-            static let loading =
-            "Loading nearby birds..."
-            
-            
-            
-            static let empty =
-            "No birds found nearby."
-            
-            
+            static let loading = "Loading nearby birds..."
+        
+            static let empty = "No birds found nearby."
             
         }
     }
     
-    
-}
-
-enum BirdDetail {
-    
-    enum BirdDetailViewCopy {
-        static let errorAPIKey =
-        "Missing Xeno-canto API key from Remote Config."
+    enum BirdDetail {
         
-        
-        
-        static let errorAudio = "No audio recording found for this bird."
-        
+        enum BirdDetailViewCopy {
+            static let errorAPIKey =
+            "Missing Xeno-canto API key from Remote Config."
+            
+            static let errorAudio = "No audio recording found for this bird."
+        }
     }
 }
+
+

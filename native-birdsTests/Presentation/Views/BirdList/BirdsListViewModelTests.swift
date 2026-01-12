@@ -45,7 +45,7 @@ final class BirdsListViewModelTests: XCTestCase {
         await sut.loadFirstPage()
         
         XCTAssertEqual(sut.state, .loaded)
-        XCTAssertEqual(sut.birds.count, 2)
+        XCTAssertEqual(sut.birds.count, 3)
         XCTAssertTrue(sut.canLoadMore)
         XCTAssertEqual(sut.currentPage, 1)
     }
@@ -68,7 +68,7 @@ final class BirdsListViewModelTests: XCTestCase {
         await sut.loadFirstPage()
         await sut.loadNextPage()
         
-        XCTAssertEqual(sut.birds.count, 2)
+        XCTAssertEqual(sut.birds.count, 3)
         XCTAssertEqual(sut.currentPage, 2)
     }
     

@@ -52,3 +52,18 @@ struct BirdRemoteImage: View {
         } catch {}
     }
 }
+
+
+#Preview("Remote Image States") {
+    VStack {
+        BirdRemoteImage(
+            url: nil,
+            cache: MockImageCache()
+        )
+        .frame(width: 200, height: 200)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        
+        Text("Placeholder State").font(.caption)
+    }
+}
+

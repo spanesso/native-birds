@@ -4,7 +4,7 @@
 //
 //  Created by PANESSO Alfredo Sebastian on 12/01/26.
 //
- 
+
 
 import SwiftUI
 
@@ -14,24 +14,27 @@ struct BirdDetailView: View {
     let imageCache: BirdImageCacheProtocol
 
     @StateObject var viewModel: BirdDetailViewModel
+    @StateObject private var audioPlayer = BirdAudioPlayer()
 
     let onBack: () -> Void
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            BirdRemoteImage(
-                url: bird.defaultPhotoMediumUrl ?? bird.defaultPhotoUrl,
+
+            BirdHeroImage(
+                url: bird.defaultPhotoMediumUrl,
                 cache: imageCache
             )
-            .scaledToFill()
-            .ignoresSafeArea()
 
-            
+            BirdDetailBottomSheet(
+                bird: bird,
+                viewModel: viewModel,
+                audioPlayer: audioPlayer
+            )
         }
         .navigationBarBackButtonHidden(true)
-        .onAppear { viewModel.onAppear() }
+        .onAppear {
+            viewModel.onAppear()
+        }
     }
-
-
-
 }

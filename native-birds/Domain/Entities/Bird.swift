@@ -9,14 +9,16 @@ import Foundation
 
 struct Bird: Hashable, Sendable {
     let taxonId: Int
-    let englishCommonName: String?
+    let preferredCommonName: String?
     let name: String
     let defaultPhotoUrl: URL?
     let defaultPhotoMediumUrl: URL?
+    let wikipediaURL: URL?
     
     enum CodingKeys: String, CodingKey {
         case taxonId = "taxon_id"
-        case englishCommonName = "english_common_name"
+        case wikipediaURL = "wikipedia_url"
+        case preferredCommonName = "preferred_common_name"
         case name
         case defaultPhotoUrl = "default_photo_url"
         case defaultPhotoMediumUrl = "default_photo_medium_url"
@@ -30,10 +32,11 @@ extension Bird {
     ) -> Bird {
         Bird(
             taxonId: 1,
-            englishCommonName: english,
+            preferredCommonName: english,
             name: scientific,
             defaultPhotoUrl: nil,
-            defaultPhotoMediumUrl: nil
+            defaultPhotoMediumUrl: nil,
+            wikipediaURL: nil,
         )
     }
 }

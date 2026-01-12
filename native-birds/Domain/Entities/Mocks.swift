@@ -115,6 +115,11 @@ struct MockFetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
     }
 }
 
+class MockImageCache: BirdImageCacheProtocol {
+    func image(for url: URL) async -> UIImage? { nil }
+    func store(_ image: UIImage, for url: URL) async {}
+}
+
 struct MockBirdImageCache: BirdImageCacheProtocol {
     func store(_ image: UIImage, for url: URL) async { }
     

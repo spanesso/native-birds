@@ -4,41 +4,43 @@
 //
 //  Created by PANESSO Alfredo Sebastian on 12/01/26.
 //
- 
+
 import Foundation
 
 final class XenoCantoRepository: XenoCantoRepositoryProtocol {
-
+    
     private let client: NetworkClient
-
+    
     init(client: NetworkClient) {
         self.client = client
     }
-
+    
     func fetchTopRecording(genus: String, species: String, apiKey: String) async throws -> BirdRecording? {
-
-        var components = URLComponents(string: "https://xeno-canto.org/api/3/recordings")!
-
+        
+        guard var components = URLComponents(string: "https://xeno-canto.org/api/2/recordings") else {
+            throw NetworkError.invalidResponse
+        }
+        
         let queryValue = "gen:\(genus)+sp:\(species)+grp:birds"
-
+        
         components.queryItems = [
             .init(name: "query", value: queryValue),
             
-            .init(name: "per_page", value:  "1"),
+                .init(name: "per_page", value:  "1"),
             
-            .init(name: "key", value:  apiKey)
+                .init(name: "key", value:  apiKey)
         ]
-
+        
         guard let url = components.url else {
             throw NetworkError.invalidResponse
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue( "application/json", forHTTPHeaderField:  "Accept")
-
+        
         let data = try await client.data(for: request)
-
+        
         let decoded: XenoCantoRecordingsResponseDTO
         do {
             decoded = try JSONDecoder()
@@ -48,7 +50,6 @@ final class XenoCantoRepository: XenoCantoRepositoryProtocol {
             throw NetworkError.decoding
         }
         
-
         guard let first = decoded
             .recordings.first else {
             return nil

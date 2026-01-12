@@ -38,13 +38,13 @@ struct BirdListItem: View {
                 spacing: BirdSpacing.listItemTextSpacing
             ) {
                 BirdLabel(
-                    text: bird.englishCommonName ?? bird.name,
+                    text: bird.name,
                     style: .listTitle
                 )
                 .lineLimit(2)
 
                 BirdLabel(
-                    text: bird.name,
+                    text: bird.preferredCommonName ?? bird.name,
                     style: .listSubtitle
                 )
                 .lineLimit(1)

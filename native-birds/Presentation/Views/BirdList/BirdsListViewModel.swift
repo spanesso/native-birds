@@ -178,7 +178,7 @@ final class BirdsListViewModel: ObservableObject {
             var score = 0
             if bird.defaultPhotoUrl != nil { score += 1 }
             if bird.defaultPhotoMediumUrl != nil { score += 1 }
-            if let common = bird.englishCommonName,
+            if let common = bird.preferredCommonName,
                !common.trimmingCharacters(in: .whitespaces).isEmpty {
                 score += 1
             }

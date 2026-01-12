@@ -8,13 +8,13 @@
 import Foundation
 
 final class BirdsRepository: BirdsRepositoryProtocol {
-
+    
     private let client: NetworkClient
-
+    
     init(client: NetworkClient) {
         self.client = client
     }
-
+    
     func fetchNearbyBirds(
         lat: Double,
         lng: Double,
@@ -22,8 +22,11 @@ final class BirdsRepository: BirdsRepositoryProtocol {
         perPage: Int,
         bearerToken: String
     ) async throws -> BirdsPage {
-
-        var components = URLComponents(string: "https://api.inaturalist.org/v1/observations")!
+        
+        guard var components = URLComponents(string: "https://api.inaturalist.org/v1/observations") else {
+            throw NetworkError.invalidResponse
+        }
+        
         components.queryItems = [
             .init(name: "lat", value: "\(lat)"),
             .init(name: "lng", value: "\(lng)"),
@@ -34,29 +37,29 @@ final class BirdsRepository: BirdsRepositoryProtocol {
             .init(name: "per_page", value: "\(perPage)"),
             .init(name: "page", value: "\(page)")
         ]
-
+        
         guard let url = components.url else {
             throw NetworkError.invalidResponse
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
-
+        
         let data = try await client.data(for: request)
-
+        
         let decoded: INatObservationsResponseDTO
         do {
             decoded = try JSONDecoder().decode(INatObservationsResponseDTO.self, from: data)
         } catch {
             throw NetworkError.decoding
         }
-
+        
         let birds = decoded.results
             .compactMap { $0.taxon }
             .compactMap { INatMapper.map(dto: $0) }
-
+        
         return BirdsPage(
             birds: birds,
             page: decoded.page,

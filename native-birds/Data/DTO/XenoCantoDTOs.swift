@@ -13,10 +13,11 @@ struct XenoCantoRecordingsResponseDTO: Decodable, Sendable {
 }
 
 struct XenoCantoRecordingDTO: Decodable, Sendable {
-    let  id:  String
-    let species:  XenoCantoSpeciesDTO
-    
-    let audio: XenoCantoAudioDTO
+    let id: String
+    let file: String
+    let gen: String
+    let sp: String
+    let en: String
 }
 
 struct XenoCantoSpeciesDTO:  Decodable, Sendable {
@@ -27,9 +28,9 @@ struct XenoCantoSpeciesDTO:  Decodable, Sendable {
 }
 
 struct XenoCantoAudioDTO: Decodable,
-                            Sendable {
+                          Sendable {
     let url: String
-   
+    
     let quality: String
     let type: String
     let  duration: String
@@ -39,15 +40,13 @@ enum XenoCantoMapper {
     static func map(dto: XenoCantoRecordingDTO) -> BirdRecording {
         BirdRecording(
             id: dto.id,
-            
-            genus:  dto.species.genus,
-            species: dto.species.species,
-            commonName:  dto.species.commonName,
-            audioUrl:  dto.audio.url,
-           
-            quality: dto.audio.quality,
-            type: dto.audio.type,
-            duration: dto.audio.duration
+            genus: dto.gen,
+            species: dto.sp,
+            commonName: dto.en,
+            audioUrl: dto.file,
+            quality: "unknown",
+            type: "sound",
+            duration: "0"
         )
     }
 }

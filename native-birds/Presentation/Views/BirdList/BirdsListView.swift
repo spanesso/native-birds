@@ -8,13 +8,144 @@
 import SwiftUI
 
 struct BirdsListView: View {
+    
+    @StateObject var viewModel: BirdsListViewModel
+    let imageCache: BirdImageCacheProtocol
+    
     var body: some View {
         ZStack {
-            BirdTheme.surfaceWhite.ignoresSafeArea()
-            Text("Pending View")
-                .foregroundStyle(BirdTheme.deepBlack)
+            BirdGradientBackground()
+            
+            switch viewModel.state {
+                
+            case .loaded, .loadingMore:
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 14) {
+                        
+                        Text(AppCopy.BirdList.BirdListViewCopy.title)
+                            .font(.system(size: 40, weight: .heavy))
+                            .foregroundStyle(BirdTheme.deepBlack)
+                            .padding(.horizontal, BirdSpacing.screenHorizontal)
+                            .padding(.top, 6)
+                        
+                        LazyVStack(spacing: 14) {
+                            ForEach(viewModel.birds, id: \.name) { bird in
+                                BirdListItem(bird: bird, cache: imageCache)
+                                    .padding(.horizontal, BirdSpacing.screenHorizontal)
+                                    .onAppear {
+                                        viewModel.loadNextPageIfNeeded(currentItem: bird)
+                                    }
+                            }
+                            
+                            footerPaginationView
+                        }
+                        
+                        .padding(.bottom, 16)
+                    }
+                }
+                .refreshable {
+                    await viewModel.loadNextPage()
+                }
+                
+                
+            case .idle, .loading:
+                BirdsListLoadingView(
+                        text: AppCopy.BirdList.BirdListViewCopy.loading
+                    )
+                
+            case .empty:
+                BirdsListFeedbackView(
+                        text: AppCopy.BirdList.BirdListViewCopy.empty,
+                        actionTitle: AppCopy.Global.retry
+                    ) {
+                        Task { await viewModel.loadFirstPage() }
+                    }
+                
+            case .error(let message):
+                BirdsListFeedbackView(
+                       text: message,
+                       actionTitle: AppCopy.Global.retry
+                   ) {
+                       Task { await viewModel.loadFirstPage() }
+                   }
+            }
         }
-        .navigationTitle("Nearby Birds")
         .navigationBarBackButtonHidden(true)
+        .onAppear { viewModel.onAppear() }
+    }
+    
+    @ViewBuilder
+    private var footerPaginationView: some View {
+        if viewModel.canLoadMore {
+            if viewModel.state == .loadingMore {
+                ProgressView()
+                    .padding(.vertical, 14)
+            } else {
+                BirdButton(title: AppCopy.Global.retry, state: .normal) {
+                    Task { await viewModel.loadNextPage() }
+                }
+                .padding(.horizontal, BirdSpacing.screenHorizontal)
+                .padding(.vertical, 8)
+                .opacity(0.0001)
+            }
+        } else {
+            EmptyView()
+        }
     }
 }
+
+#if DEBUG
+
+#Preview("Idle") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(state: .idle),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Loading") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(state: .loading),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Loaded") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(
+            state: .loaded,
+            birds: Bird.mockList(),
+            canLoadMore: true
+        ),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Loading More") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(
+            state: .loadingMore,
+            birds: Bird.mockList(),
+            canLoadMore: true
+        ),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Empty") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(state: .empty),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#Preview("Error") {
+    BirdsListView(
+        viewModel: makeBirdsListViewModel(
+            state: .error("Something went wrong")
+        ),
+        imageCache: MockBirdImageCache()
+    )
+}
+
+#endif

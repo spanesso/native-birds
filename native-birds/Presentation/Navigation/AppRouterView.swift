@@ -14,9 +14,9 @@ struct AppRouterView: View {
     
     var body: some View {
         NavigationStack(path: Binding(
-                   get: { router.path },
-                   set: { router.path = $0 }
-               )) {
+            get: { router.path },
+            set: { router.path = $0 }
+        )) {
             SplashView(
                 viewModel: SplashViewModel(
                     router: router,
@@ -26,9 +26,19 @@ struct AppRouterView: View {
             ).navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .birdList:
-                    BirdsListView( )
+                    BirdsListView(
+                        viewModel: BirdsListViewModel(
+                            locationService: container.locationService,
+                            remoteConfig: container.remoteConfig,
+                            fetchNearbyBirds: container.fetchNearbyBirdsUseCase
+                        ),
+                        imageCache: container.imageCache
+                    )
                 case .birdDetail(let bird):
-                    BirdsListView( )
+                    BirdTheme.surfaceWhite
+                        .ignoresSafeArea()
+                        .overlay(Text("Detail: \(bird.englishCommonName ?? bird.name)"))
+                        .navigationBarBackButtonHidden(true)
                 }
             }
         }

@@ -21,15 +21,17 @@ struct BirdsListView: View {
                 
             case .loaded, .loadingMore:
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: BirdSpacing.screenHorizontal) {
                         
-                        Text(AppCopy.BirdList.BirdListViewCopy.title)
-                            .font(.system(size: 40, weight: .heavy))
-                            .foregroundStyle(BirdTheme.deepBlack)
-                            .padding(.horizontal, BirdSpacing.screenHorizontal)
-                            .padding(.top, 6)
+                        BirdLabel(
+                            text: AppCopy.BirdList.BirdListViewCopy.title,
+                            style: .title
+                        ).padding(.horizontal, BirdSpacing.screenHorizontal)
+                        .padding(.top, 6)
                         
-                        LazyVStack(spacing: 14) {
+                      
+                        
+                        LazyVStack(spacing: BirdSpacing.listItemPadding) {
                             ForEach(viewModel.birds, id: \.name) { bird in
                                 BirdListItem(bird: bird, cache: imageCache)
                                     .padding(.horizontal, BirdSpacing.screenHorizontal)
@@ -44,7 +46,7 @@ struct BirdsListView: View {
                             footerPaginationView
                         }
                         
-                        .padding(.bottom, 16)
+                        .padding(.bottom, BirdSpacing.screenHorizontal)
                     }
                 }
                 .refreshable {

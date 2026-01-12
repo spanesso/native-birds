@@ -8,19 +8,15 @@
 import SwiftUI
 
 struct BirdDetailBottomSheet: View {
-
     let bird: Bird
-
     @ObservedObject var viewModel: BirdDetailViewModel
     let audioPlayer: BirdAudioPlayer
 
     var body: some View {
         VStack(spacing: BirdSpacing.sectionVertical) {
-
             BottomSheetGrabber()
 
             VStack(spacing: BirdSpacing.listItemTextSpacing) {
-
                 Text(bird.preferredCommonName ?? bird.name)
                     .font(BirdTypography.font(for: .listTitle))
                     .foregroundColor(BirdTheme.deepBlack)
@@ -48,17 +44,17 @@ struct BirdDetailBottomSheet: View {
             .padding(.top, BirdSpacing.buttonVertical)
 
             BirdWikipediaSection(url: bird.wikipediaURL)
- 
         }
-        .padding(.bottom,  BirdSpacing.buttonVertical)
+        .padding(.bottom, BirdSpacing.buttonVertical + 20)
         .frame(maxWidth: .infinity)
+        .fixedSize(horizontal: false, vertical: true)
         .background(
             RoundedRectangle(
                 cornerRadius: BirdSpacing.listItemCornerRadius,
                 style: .continuous
             )
             .fill(BirdTheme.surfaceWhite)
-            .ignoresSafeArea(edges: .bottom)
+            .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: -10)
         )
     }
 }

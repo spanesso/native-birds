@@ -20,6 +20,7 @@ struct BirdListItem: View {
 
             BirdRemoteImage(
                 url: bird.defaultPhotoUrl,
+                hugeImage: false,
                 cache: cache
             )
             .frame(

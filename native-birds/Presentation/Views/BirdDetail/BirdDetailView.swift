@@ -14,43 +14,22 @@ struct BirdDetailView: View {
     @StateObject private var audioPlayer = BirdAudioPlayer()
     
     let onBack: () -> Void
-
+    
     var body: some View {
         ZStack(alignment: .bottom) {
-            BirdHeroImage(
-                url: bird.defaultPhotoMediumUrl,
-                cache: imageCache
-            )
-            .ignoresSafeArea()
+            BirdHeroImage(url: bird.defaultPhotoMediumUrl, cache: imageCache)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .zIndex(0)
             
+            LinearGradient(colors: [.black.opacity(0.4), .clear], startPoint: .top, endPoint: .center)
+                .ignoresSafeArea()
+                .zIndex(1)
             
-            LinearGradient(
-                gradient: Gradient(colors: [.black.opacity(0.4), .clear, .clear]),
-                startPoint: .top,
-                endPoint: .center
-            )
-            .ignoresSafeArea()
-            
-            
-            BirdDetailBottomSheet(
-                bird: bird,
-                viewModel: viewModel,
-                audioPlayer: audioPlayer
-            )
+            BirdDetailBottomSheet(bird: bird, viewModel: viewModel, audioPlayer: audioPlayer)
+                .frame(maxWidth: .infinity)
+                .zIndex(2)
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    audioPlayer.stop()
-                    onBack()
-                }) {
-                    Image(systemName: "chevron.left.circle.fill")
-                        .foregroundStyle(.white, .black.opacity(0.3))
-                        .font(.title2)
-                }
-            }
-        }
         .onAppear { viewModel.onAppear() }
     }
 }
@@ -64,7 +43,7 @@ struct BirdDetailView: View {
     
     let mockRemoteConfig = MockRemoteConfig(ready: true)
     let mockImageCache = MockImageCache()
-
+    
     let viewModel = BirdDetailViewModel(
         bird: mockBird,
         remoteConfig: mockRemoteConfig,
@@ -72,7 +51,7 @@ struct BirdDetailView: View {
         audioCache: MockAudioCache(),
         downloader: MockDownloader()
     )
-
+    
     return NavigationStack {
         BirdDetailView(
             bird: mockBird,

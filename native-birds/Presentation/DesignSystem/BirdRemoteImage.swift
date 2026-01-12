@@ -22,11 +22,14 @@ struct BirdRemoteImage: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                Rectangle()
-                    .fill(.black.opacity(0.08))
-
-                Image(systemName: "photo")
-                    .foregroundStyle(.black.opacity(0.35))
+                
+                BirdFlightView(
+                    spriteSheetName: "sprite_animation"
+                )
+                .frame(
+                    width: BirdSpacing.loadinViewSpacingWidth,
+                    height: BirdSpacing.loadinViewSpacingHeight
+                )
             }
         }
         .clipped()

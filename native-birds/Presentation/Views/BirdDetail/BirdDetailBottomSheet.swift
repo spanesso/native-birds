@@ -48,9 +48,9 @@ struct BirdDetailBottomSheet: View {
             .padding(.top, BirdSpacing.buttonVertical)
 
             BirdWikipediaSection(url: bird.wikipediaURL)
-
-            Spacer(minLength: BirdSpacing.contentVertical)
+ 
         }
+        .padding(.bottom,  BirdSpacing.buttonVertical)
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(

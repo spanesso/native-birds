@@ -157,6 +157,28 @@ final class MockLocationServiceTests: LocationServiceProtocol {
 }
 
 
+struct MockFetchRecording: FetchBirdRecordingUseCaseProtocol {
+    func execute(scientificName: String, apiKey: String) async throws -> BirdRecording? {
+        return BirdRecording(
+            id: "1", genus: "Pitangus", species: "sulphuratus",
+            commonName: "Great Kiskadee", audioUrl: "",
+            quality: "A", type: "sound", duration: "30"
+        )
+    }
+}
+
+struct MockAudioCache: BirdAudioCacheProtocol {
+    func fileURL(for remoteURL: URL) async -> URL? { nil }
+    func storeDownloadedFile(from tempURL: URL, remoteURL: URL) async throws -> URL { tempURL }
+}
+
+struct MockDownloader: AudioDownloadServiceProtocol {
+    func download(remoteURL: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws -> URL {
+        return URL(fileURLWithPath: "")
+    }
+}
+
+
 #if DEBUG
 
 

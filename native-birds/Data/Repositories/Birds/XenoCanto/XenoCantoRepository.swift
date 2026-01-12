@@ -17,7 +17,7 @@ final class XenoCantoRepository: XenoCantoRepositoryProtocol {
     
     func fetchTopRecording(genus: String, species: String, apiKey: String) async throws -> BirdRecording? {
         
-        guard var components = URLComponents(string: "https://xeno-canto.org/api/2/recordings") else {
+        guard var components = URLComponents(string: "https://xeno-canto.org/api/3/recordings") else {
             throw NetworkError.invalidResponse
         }
         

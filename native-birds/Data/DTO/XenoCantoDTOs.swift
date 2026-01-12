@@ -18,6 +18,10 @@ struct XenoCantoRecordingDTO: Decodable, Sendable {
     let gen: String
     let sp: String
     let en: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id, file, gen, sp, en
+    }
 }
 
 struct XenoCantoSpeciesDTO:  Decodable, Sendable {
@@ -44,8 +48,8 @@ enum XenoCantoMapper {
             species: dto.sp,
             commonName: dto.en,
             audioUrl: dto.file,
-            quality: "unknown",
-            type: "sound",
+            quality: "A",
+            type: "recording",
             duration: "0"
         )
     }

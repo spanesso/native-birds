@@ -30,14 +30,13 @@ struct BirdLabel: View {
     }
 
     var body: some View {
-        Text(text)
-            .font(
-                BirdTypography.font(for: style)
-            )
-            .foregroundStyle(BirdTypography.color(for: style))
-            .frame(
-                maxWidth: .infinity,
-                alignment: BirdTypography.alignment(for: style)
-            )
-    }
+            Text(text)
+                .font(BirdTypography.font(for: style))
+                .foregroundStyle(BirdTypography.color(for: style))
+                .multilineTextAlignment(BirdTypography.textAlignment(for: style))
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: BirdTypography.alignment(for: style)
+                )
+        }
 }

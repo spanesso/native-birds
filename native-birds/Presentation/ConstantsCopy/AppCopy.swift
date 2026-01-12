@@ -38,8 +38,7 @@ enum AppCopy {
             "Native Birds"
             
             static let subTitle =
-            "Discover and listen to the world of birds"
-            
+            "Listen to the world of birds"
             
         }
         

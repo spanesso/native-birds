@@ -32,8 +32,7 @@ final class SplashViewModel: ObservableObject {
     
     func onAppear() {
         Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            await checkIfContinueIsPossible()
+            _ = await remoteConfig.activate()
         }
     }
     
@@ -49,12 +48,6 @@ final class SplashViewModel: ObservableObject {
     
     func retryKeysTapped() {
         Task {
-            await validateRemoteConfigKeys()
-        }
-    }
-    
-    private func checkIfContinueIsPossible() async {
-        if locationService.authorizationStatus() == .authorized {
             await validateRemoteConfigKeys()
         }
     }
@@ -98,12 +91,10 @@ final class SplashViewModel: ObservableObject {
         }
         
         state = .readyToNavigate
-        
         nativagateToNextView()
     }
     
     private func nativagateToNextView() {
         router.push(.birdList)
     }
-    
 }

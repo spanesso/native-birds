@@ -27,16 +27,17 @@ struct SplashView: View {
                 .padding(.horizontal, BirdSpacing.imageHorizontal)
         }
     }
- 
+    
     
     var body: some View {
-        
         ZStack {
             BirdGradientBackground()
             
-            VStack(spacing: BirdSpacing.sectionVertical) {
-                Spacer(minLength: BirdSpacing.large)
-                
+            birdImage
+                .frame(width: BirdSize.splashImage, height: BirdSize.splashImage)
+                .padding(.horizontal, BirdSpacing.imageHorizontal)
+            
+            VStack {
                 VStack(spacing: BirdSpacing.contentVertical) {
                     BirdLabel(
                         text: AppCopy.Splash.SplashViewCopy.title,
@@ -48,13 +49,8 @@ struct SplashView: View {
                         style: .subtitle
                     )
                 }
+                .padding(.top, BirdSpacing.large)
                 .padding(.horizontal, BirdSpacing.screenHorizontal)
-                
-                Spacer()
-                
-                birdImage
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, BirdSpacing.imageHorizontal)
                 
                 Spacer()
                 
@@ -67,9 +63,10 @@ struct SplashView: View {
                         : .normal
                     ) {
                         viewModel.startAdventureTapped()
-                    }.padding(.horizontal, BirdSpacing.screenHorizontal)
+                    }
+                    .padding()
                 }
-            }
+            }.padding(.horizontal, BirdSpacing.screenHorizontal)
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {

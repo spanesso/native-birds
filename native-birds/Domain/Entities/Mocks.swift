@@ -57,38 +57,43 @@ final class MockLocationService: LocationServiceProtocol {
 }
 
 extension Bird {
+
     static func mock() -> Bird {
         Bird(
             taxonId: 1,
-            englishCommonName: "Peregrine Falcon",
-            name: "Peregrine Falcon",
+            preferredCommonName: "Peregrine Falcon",
+            name: "Falco peregrinus",
             defaultPhotoUrl: nil,
-            defaultPhotoMediumUrl: nil
+            defaultPhotoMediumUrl: nil,
+            wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/Peregrine_falcon")
         )
     }
-    
+
     static func mockList() -> [Bird] {
         [
             Bird(
                 taxonId: 1,
-                englishCommonName: "Inca Jay",
+                preferredCommonName: "Inca Jay",
                 name: "Cyanocorax yncas",
                 defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil
+                defaultPhotoMediumUrl: nil,
+                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
             ),
             Bird(
                 taxonId: 2,
-                englishCommonName: "Great Kiskadee",
+                preferredCommonName: "Great Kiskadee",
                 name: "Pitangus sulphuratus",
                 defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil
+                defaultPhotoMediumUrl: nil,
+                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
             ),
             Bird(
                 taxonId: 3,
-                englishCommonName: "Peregrine Falcon",
-                name: "Peregrine Falcon",
+                preferredCommonName: "Peregrine Falcon",
+                name: "Falco peregrinus",
                 defaultPhotoUrl: nil,
-                defaultPhotoMediumUrl: nil
+                defaultPhotoMediumUrl: nil,
+                wikipediaURL: URL(string: "https://en.wikipedia.org/wiki/bir-url")
             )
         ]
     }
@@ -150,10 +155,6 @@ final class MockLocationServiceTests: LocationServiceProtocol {
         return coordinate
     }
 }
-
-
-
-
 
 
 #if DEBUG

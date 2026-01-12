@@ -8,7 +8,7 @@
 import SwiftUI
 import Foundation
 
-private struct BirdWikipediaSection: View {
+struct BirdWikipediaSection: View {
 
     let url: URL?
 

@@ -8,7 +8,7 @@
 import SwiftUI
 import Foundation
 
-private struct BirdHeroImage: View {
+struct BirdHeroImage: View {
 
     let url: URL?
     let cache: BirdImageCacheProtocol

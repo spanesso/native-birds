@@ -5,7 +5,9 @@
 //  Created by PANESSO Alfredo Sebastian on 12/01/26.
 //
 
-private struct BirdWaveformView: View {
+import SwiftUI
+
+struct BirdWaveformView: View {
 
     let audioState: BirdAudioUIState
     let waveform: [CGFloat]

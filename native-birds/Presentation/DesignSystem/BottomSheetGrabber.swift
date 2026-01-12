@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private struct BottomSheetGrabber: View {
+struct BottomSheetGrabber: View {
 
     var body: some View {
         Capsule()

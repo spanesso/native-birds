@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private struct BirdPlayButton: View {
+struct BirdPlayButton: View {
 
     let audioState: BirdAudioUIState
     let action: () -> Void

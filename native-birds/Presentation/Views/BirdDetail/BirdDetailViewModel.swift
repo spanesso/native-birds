@@ -94,4 +94,26 @@ final class BirdDetailViewModel: ObservableObject {
             audioState = .error(error.localizedDescription)
         }
     }
+    
+    func togglePlay(using player: BirdAudioPlayer) {
+        switch audioState {
+
+        case .ready(let url):
+            try? player.load(localURL: url)
+            player.play()
+            audioState = .playing(localFileURL: url)
+
+        case .playing(let url):
+            player.pause()
+            audioState = .paused(localFileURL: url)
+
+        case .paused(let url):
+            player.play()
+            audioState = .playing(localFileURL: url)
+
+        default:
+            break
+        }
+    }
+
 }

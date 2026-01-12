@@ -93,7 +93,7 @@ final class BirdsListViewModelTests: XCTestCase {
         await sut.loadFirstPage()
         
         XCTAssertEqual(sut.birds.count, 1)
-        XCTAssertEqual(sut.birds.first?.englishCommonName, "Inca Jay")
+        XCTAssertEqual(sut.birds.first?.preferredCommonName, "Inca Jay")
     }
     
     func test_errorOnFirstPage_setsErrorState() async {

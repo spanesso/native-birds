@@ -17,17 +17,15 @@ enum BirdFixtures {
     ) -> Bird {
         Bird(
             taxonId: Int.random(in: 1...999),
-            englishCommonName: english,
+            preferredCommonName: english,
             name: name,
             defaultPhotoUrl: photo ? URL(string: "https://bird_image.jpg") : nil,
-            defaultPhotoMediumUrl: nil
+            defaultPhotoMediumUrl: nil,
+            wikipediaURL: URL(string: "https://wikipedia")!
         )
     }
 
     static func list() -> [Bird] {
-        [
-            bird(name: "Cyanocorax yncas", english: "Inca Jay", photo: true),
-            bird(name: "Pitangus sulphuratus", english: "Great Kiskadee")
-        ]
+        Bird.mockList()
     }
 }

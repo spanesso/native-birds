@@ -16,6 +16,11 @@ final class DIContainer{
     let fetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol
     let imageCache: BirdImageCacheProtocol
     
+    let xenoRepo: XenoCantoRepositoryProtocol
+    let fetchBirdRecordingUseCase: FetchBirdRecordingUseCaseProtocol
+    let audioCache: BirdAudioCacheProtocol
+    let audioDownloader: AudioDownloadServiceProtocol
+    
     private init(
         router: AppRouter,
         
@@ -24,7 +29,12 @@ final class DIContainer{
         birdsRepository: BirdsRepositoryProtocol,
         fetchNearbyBirdsUseCase:  FetchNearbyBirdsUseCaseProtocol,
         
-        imageCache: BirdImageCacheProtocol
+        imageCache: BirdImageCacheProtocol,
+        
+        xenoRepo: XenoCantoRepositoryProtocol,
+        fetchBirdRecordingUseCase: FetchBirdRecordingUseCaseProtocol,
+        audioCache: BirdAudioCacheProtocol,
+        audioDownloader: AudioDownloadServiceProtocol
     ) {
         self.router = router
         self.remoteConfig = remoteConfig
@@ -34,11 +44,17 @@ final class DIContainer{
         
         self.fetchNearbyBirdsUseCase = fetchNearbyBirdsUseCase
         self.imageCache = imageCache
+        
+        
+        self.xenoRepo = xenoRepo
+        self.fetchBirdRecordingUseCase = fetchBirdRecordingUseCase
+        self.audioCache = audioCache
+        self.audioDownloader = audioDownloader
     }
     
     static func construct() -> DIContainer {
         let router = AppRouter()
-       
+        
         let remoteConfig = RemoteConfigRepository()
         let locationService = LocationService()
         
@@ -48,13 +64,22 @@ final class DIContainer{
         let useCase = FetchNearbyBirdsUseCase(repo: birdsRepo)
         let cache = BirdImageCache()
         
+        let xenoRepo = XenoCantoRepository(client: client)
+        let fetchRecording = FetchBirdRecordingUseCase(repo: xenoRepo)
+        let audioCache = BirdAudioCache()
+        let downloader = AudioDownloadService()
+        
         return DIContainer(
             router: router,
             remoteConfig: remoteConfig,
             locationService: locationService,
             birdsRepository: birdsRepo,
             fetchNearbyBirdsUseCase: useCase,
-            imageCache: cache
+            imageCache: cache,
+            xenoRepo: xenoRepo,
+            fetchBirdRecordingUseCase: fetchRecording,
+            audioCache: audioCache,
+            audioDownloader: downloader
         )
     }
 }

@@ -11,8 +11,9 @@ struct BirdPlayButton: View {
     let audioState: BirdAudioUIState
     let action: () -> Void
 
-    private let buttonSize: CGFloat = BirdSpacing.large
-    private let ringWidth: CGFloat = 4
+    private let buttonSize: CGFloat = 88
+    private let iconSize: CGFloat = 38
+    private let ringWidth: CGFloat = 6
 
     var body: some View {
         Button(action: action) {
@@ -20,7 +21,7 @@ struct BirdPlayButton: View {
                 Circle()
                     .fill(BirdTheme.accentYellow)
                     .frame(width: buttonSize, height: buttonSize)
-                    .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+                    .shadow(color: .black.opacity(0.2), radius: 12, x: 0, y: 6)
 
                 if case .downloading(let progress) = audioState {
                     Circle()
@@ -31,8 +32,7 @@ struct BirdPlayButton: View {
                         )
                         .frame(width: buttonSize - ringWidth, height: buttonSize - ringWidth)
                         .rotationEffect(.degrees(-90))
-                        .opacity(1.0)
-                        .animation(.linear, value: progress)
+                        .animation(.linear(duration: 0.2), value: progress)
                 }
 
                 content
@@ -41,6 +41,8 @@ struct BirdPlayButton: View {
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(!isEnabled)
+        .scaleEffect(isEnabled ? 1.0 : 0.95)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isEnabled)
     }
 
     @ViewBuilder
@@ -48,14 +50,15 @@ struct BirdPlayButton: View {
         switch audioState {
         case .playing:
             Image(systemName: "pause.fill")
-                .font(.system(size: 24, weight: .bold))
-        case .downloading:
+                .font(.system(size: iconSize, weight: .black))
+        case .downloading, .idle:
             ProgressView()
-                .controlSize(.small)
+                .controlSize(.regular)
+                .tint(BirdTheme.deepBlack)
         default:
             Image(systemName: "play.fill")
-                .font(.system(size: 24, weight: .bold))
-                .offset(x: 2)
+                .font(.system(size: iconSize, weight: .black))
+                .offset(x: 4)
         }
     }
 
@@ -66,7 +69,6 @@ struct BirdPlayButton: View {
         }
     }
 }
-
 
 #Preview("Play Button States") {
     VStack(spacing: 40) {

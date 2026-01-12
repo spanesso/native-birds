@@ -98,22 +98,29 @@ final class BirdDetailViewModel: ObservableObject {
     }
     
     func togglePlay(using player: BirdAudioPlayer) {
+        player.onDidFinishPlaying = { [weak self] in
+            Task { @MainActor in
+                self?.handleAudioFinished()
+            }
+        }
+        
         switch audioState {
-            
-        case .ready(let url):
+        case .ready(let url), .paused(let url):
             player.play(url: url)
             audioState = .playing(localFileURL: url)
             
         case .playing(let url):
-            player.pause()
-            audioState = .paused(localFileURL: url)
-            
-        case .paused(let url):
-            player.play(url: url)
-            audioState = .playing(localFileURL: url)
+            player.stop()
+            audioState = .ready(localFileURL: url)
             
         default:
             break
+        }
+    }
+    
+    func handleAudioFinished() {
+        if case .playing(let url) = audioState {
+            audioState = .ready(localFileURL: url)
         }
     }
 }

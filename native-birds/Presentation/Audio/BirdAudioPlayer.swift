@@ -20,18 +20,19 @@ final class BirdAudioPlayer: ObservableObject, BirdAudioPlayerProtocol {
     private var playerItemContext = 0
     private var timeObserver: Any?
     
+    var onDidFinishPlaying: (() -> Void)?
+    
     func play(url: URL) {
-        let asset = AVAsset(url: url)
-        let playerItem = AVPlayerItem(asset: asset)
+        stop()
+        
+        let playerItem = AVPlayerItem(url: url)
         
         NotificationCenter.default.addObserver(
-            forName: .AVPlayerItemDidPlayToEndTime,
-            object: playerItem,
-            queue: .main
-        ) { [weak self] _ in
-            self?.isPlaying = false
-            self?.player?.seek(to: .zero)
-        }
+            self,
+            selector: #selector(playerDidFinishPlaying),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: playerItem
+        )
         
         if player == nil {
             player = AVPlayer(playerItem: playerItem)
@@ -52,13 +53,19 @@ final class BirdAudioPlayer: ObservableObject, BirdAudioPlayerProtocol {
         player?.pause()
         player?.seek(to: .zero)
         isPlaying = false
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+    }
+    
+    private func handlePlaybackFinished() {
+        isPlaying = false
+        player?.seek(to: .zero)
+        onDidFinishPlaying?()
     }
     
     @objc private func playerDidFinishPlaying() {
-        Task { @MainActor in
-            self.isPlaying = false
-            self.player?.seek(to: .zero)
-        }
+        isPlaying = false
+        player?.seek(to: .zero)
+        onDidFinishPlaying?()
     }
     
     deinit {

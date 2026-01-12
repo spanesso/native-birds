@@ -56,7 +56,8 @@ struct BirdDetailBottomSheet: View {
             .background(
                 BirdTheme.surfaceWhite
                     .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                    .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: -10)
+                    .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: -10)
+                    .ignoresSafeArea(edges: .bottom)
             )
             .fixedSize(horizontal: false, vertical: true)
             .ignoresSafeArea(edges: .bottom)

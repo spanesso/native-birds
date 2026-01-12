@@ -4,8 +4,9 @@
 //
 //  Created by PANESSO Alfredo Sebastian on 12/01/26.
 //
-
+ 
 import Foundation
+internal import Combine
 
 @MainActor
 final class BirdDetailViewModel: ObservableObject {
@@ -20,7 +21,7 @@ final class BirdDetailViewModel: ObservableObject {
     private let audioCache: BirdAudioCacheProtocol
     private let downloader: AudioDownloadServiceProtocol
 
-    private var currentRecording: BirdRecording?
+    private var didAppear: Bool = false
 
     init(
         bird: Bird,
@@ -37,9 +38,9 @@ final class BirdDetailViewModel: ObservableObject {
     }
 
     func onAppear() {
-        guard state == .idle else {
-            return
-        }
+        guard !didAppear else { return }
+        didAppear = true
+
         Task { await load() }
     }
 
@@ -51,38 +52,36 @@ final class BirdDetailViewModel: ObservableObject {
         do {
             let keys = await remoteConfig.getAPIKeys()
             let apiKey = (keys.xenoToken ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
             guard !apiKey.isEmpty else {
                 state = .error(BirdDetail.BirdDetailViewCopy.errorAPIKey)
                 return
             }
 
-            let rec = try await fetchRecording.execute(
+            let recording = try await fetchRecording.execute(
                 scientificName: bird.name,
                 apiKey: apiKey
             )
 
-            currentRecording = rec
-            state = .loaded(recording: rec)
+            state = .loaded(recording: recording)
 
-            guard let rec, let remote = URL(string: rec.audioUrl) else {
-                
+            guard let recording,
+                  let remote = URL(string: recording.audioUrl) else {
                 audioState = .error(BirdDetail.BirdDetailViewCopy.errorAudio)
                 return
             }
 
             if let cached = await audioCache.fileURL(for: remote) {
                 audioState = .ready(localFileURL: cached)
-                
                 waveform = (try? await WaveformGenerator.generate(from: cached)) ?? []
                 return
             }
-            
+
             audioState = .downloading(progress: 0)
 
             let tempURL = try await downloader.download(remoteURL: remote) { [weak self] progress in
                 Task { @MainActor in
-                    
-                    self?.audioState = .downloading(progress: progress)
+                    self?.audioState = .downloading(progress: min(max(progress, 0), 1))
                 }
             }
 
@@ -92,7 +91,7 @@ final class BirdDetailViewModel: ObservableObject {
 
         } catch {
             state = .error(error.localizedDescription)
+            audioState = .error(error.localizedDescription)
         }
     }
 }
-

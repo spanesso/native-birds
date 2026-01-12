@@ -9,6 +9,7 @@
 
 import Foundation
 import AVFoundation
+internal import Combine
 
 @MainActor
 final class BirdAudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
@@ -19,10 +20,7 @@ final class BirdAudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func load(localURL: URL) throws {
         player = try AVAudioPlayer(contentsOf: localURL)
-        
-        
         player?.delegate = self
-        
         player?.prepareToPlay()
         isPlaying = false
     }
@@ -43,7 +41,10 @@ final class BirdAudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         isPlaying = false
     }
 
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(
+        _ player: AVAudioPlayer,
+        successfully flag: Bool
+    ) {
         isPlaying = false
     }
 }

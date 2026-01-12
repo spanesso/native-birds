@@ -5,26 +5,23 @@
 //  Created by PANESSO Alfredo Sebastian on 12/01/26.
 //
 
-
 import Foundation
 
 @MainActor
 final class BirdDetailViewModel: ObservableObject {
-    
+
     @Published private(set) var state: BirdDetailUIState = .idle
     @Published private(set) var audioState: BirdAudioUIState = .idle
-    
-    
+    @Published private(set) var waveform: [CGFloat] = []
+
     private let bird: Bird
     private let remoteConfig: RemoteConfigProtocol
-    
     private let fetchRecording: FetchBirdRecordingUseCaseProtocol
     private let audioCache: BirdAudioCacheProtocol
-    
     private let downloader: AudioDownloadServiceProtocol
-    
+
     private var currentRecording: BirdRecording?
-    
+
     init(
         bird: Bird,
         remoteConfig: RemoteConfigProtocol,
@@ -38,9 +35,64 @@ final class BirdDetailViewModel: ObservableObject {
         self.audioCache = audioCache
         self.downloader = downloader
     }
-    
+
     func onAppear() {
+        guard state == .idle else {
+            return
+        }
+        Task { await load() }
     }
-    
-    
+
+    func load() async {
+        state = .loading
+        audioState = .idle
+        waveform = []
+
+        do {
+            let keys = await remoteConfig.getAPIKeys()
+            let apiKey = (keys.xenoToken ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !apiKey.isEmpty else {
+                state = .error(BirdDetail.BirdDetailViewCopy.errorAPIKey)
+                return
+            }
+
+            let rec = try await fetchRecording.execute(
+                scientificName: bird.name,
+                apiKey: apiKey
+            )
+
+            currentRecording = rec
+            state = .loaded(recording: rec)
+
+            guard let rec, let remote = URL(string: rec.audioUrl) else {
+                
+                audioState = .error(BirdDetail.BirdDetailViewCopy.errorAudio)
+                return
+            }
+
+            if let cached = await audioCache.fileURL(for: remote) {
+                audioState = .ready(localFileURL: cached)
+                
+                waveform = (try? await WaveformGenerator.generate(from: cached)) ?? []
+                return
+            }
+            
+            audioState = .downloading(progress: 0)
+
+            let tempURL = try await downloader.download(remoteURL: remote) { [weak self] progress in
+                Task { @MainActor in
+                    
+                    self?.audioState = .downloading(progress: progress)
+                }
+            }
+
+            let stored = try await audioCache.storeDownloadedFile(from: tempURL, remoteURL: remote)
+            audioState = .ready(localFileURL: stored)
+            waveform = (try? await WaveformGenerator.generate(from: stored)) ?? []
+
+        } catch {
+            state = .error(error.localizedDescription)
+        }
+    }
 }
+

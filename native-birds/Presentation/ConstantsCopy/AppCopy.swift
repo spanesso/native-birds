@@ -30,7 +30,7 @@ enum AppCopy {
     }
     
     
-  
+    
     enum Splash {
         
         enum SplashViewCopy {
@@ -88,5 +88,20 @@ enum AppCopy {
             
             
         }
+    }
+    
+    
+}
+
+enum BirdDetail {
+    
+    enum BirdDetailViewCopy {
+        static let errorAPIKey =
+        "Missing Xeno-canto API key from Remote Config."
+        
+        
+        
+        static let errorAudio = "No audio recording found for this bird."
+        
     }
 }

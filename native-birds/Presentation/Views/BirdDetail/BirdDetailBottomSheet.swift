@@ -11,50 +11,79 @@ struct BirdDetailBottomSheet: View {
     let bird: Bird
     @ObservedObject var viewModel: BirdDetailViewModel
     let audioPlayer: BirdAudioPlayer
-
+    
     var body: some View {
-        VStack(spacing: BirdSpacing.sectionVertical) {
-            BottomSheetGrabber()
+        ZStack(alignment: .top) {
+             
+            RoundedRectangle(cornerRadius: BirdSpacing.listItemCornerRadius, style: .continuous)
+                .fill(BirdTheme.surfaceWhite)
+                .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: -10)
+                .ignoresSafeArea(edges: .bottom)
 
-            VStack(spacing: BirdSpacing.listItemTextSpacing) {
-                Text(bird.preferredCommonName ?? bird.name)
-                    .font(BirdTypography.font(for: .listTitle))
-                    .foregroundColor(BirdTheme.deepBlack)
-                    .multilineTextAlignment(.center)
-
-                Text(bird.name)
-                    .font(BirdTypography.font(for: .listSubtitle))
-                    .foregroundColor(BirdTheme.primaryGreen)
-            }
-            .padding(.horizontal, BirdSpacing.screenHorizontal)
-
-            BirdWaveformView(
-                audioState: viewModel.audioState,
-                waveform: viewModel.waveform
-            )
-
-            HStack(spacing: BirdSpacing.buttonVertical) {
+ 
+            VStack(spacing: 0) {
+                BottomSheetGrabber()
+                    .padding(.bottom, BirdSpacing.sectionVertical)
+                
+                VStack(spacing: BirdSpacing.listItemTextSpacing) {
+                    Text(bird.preferredCommonName ?? bird.name)
+                        .font(BirdTypography.font(for: .listTitle))
+                        .foregroundColor(BirdTheme.deepBlack)
+                        .multilineTextAlignment(.center)
+                    
+                    Text(bird.name)
+                        .font(BirdTypography.font(for: .listSubtitle))
+                        .foregroundColor(BirdTheme.primaryGreen)
+                }
+                .padding(.horizontal, BirdSpacing.screenHorizontal)
+                
+                BirdWaveformView(
+                    audioState: viewModel.audioState,
+                    waveform: viewModel.waveform
+                )
+                .padding(.vertical, BirdSpacing.sectionVertical)
+                
                 BirdPlayButton(
                     audioState: viewModel.audioState,
-                    action: {
-                        viewModel.togglePlay(using: audioPlayer)
-                    }
+                    action: { viewModel.togglePlay(using: audioPlayer) }
                 )
+                .padding(.bottom, BirdSpacing.sectionVertical)
+                
+                BirdWikipediaSection(url: bird.wikipediaURL)
+                    .padding(.bottom, 12)
             }
-            .padding(.top, BirdSpacing.buttonVertical)
-
-            BirdWikipediaSection(url: bird.wikipediaURL)
+            .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.bottom, BirdSpacing.buttonVertical + 20)
-        .frame(maxWidth: .infinity)
         .fixedSize(horizontal: false, vertical: true)
-        .background(
-            RoundedRectangle(
-                cornerRadius: BirdSpacing.listItemCornerRadius,
-                style: .continuous
-            )
-            .fill(BirdTheme.surfaceWhite)
-            .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: -10)
-        )
     }
 }
+
+#Preview("Bird Detail Bottom Sheet") {
+    let mockBird = Bird.preview(
+        english: "Western Gull",
+        scientific: "Larus occidentalis"
+    )
+    
+    let viewModel = BirdDetailViewModel(
+        bird: mockBird,
+        remoteConfig: MockRemoteConfig(ready: true),
+        fetchRecording: MockFetchRecording(),
+        audioCache: MockAudioCache(),
+        downloader: MockDownloader()
+    )
+    
+    let audioPlayer = BirdAudioPlayer()
+    
+    return ZStack(alignment: .bottom) {
+        Color.black.opacity(0.6)
+            .ignoresSafeArea()
+        
+        BirdDetailBottomSheet(
+            bird: mockBird,
+            viewModel: viewModel,
+            audioPlayer: audioPlayer
+        )
+    }
+    .ignoresSafeArea(edges: .bottom)
+}
+

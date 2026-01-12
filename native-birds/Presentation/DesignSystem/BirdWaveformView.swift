@@ -10,30 +10,32 @@ import SwiftUI
 struct BirdWaveformView: View {
     let audioState: BirdAudioUIState
     let waveform: [CGFloat]
+    
+    private let containerHeight: CGFloat = 80
 
     var body: some View {
         ZStack {
-            switch audioState {
-            case .ready, .playing, .paused:
-                if waveform.isEmpty {
-                    WaveformBarsView(samples: Array(repeating: 0.35, count: 48))
+            if case .downloading = audioState {
+                VStack(spacing: 8) {
+                    WaveformBarsView(samples: Array(repeating: 0.2, count: 40))
+                        .opacity(0.15)
                         .redacted(reason: .placeholder)
-                } else {
-                    WaveformBarsView(samples: waveform)
+                    
+                    ProgressView()
+                        .controlSize(.small)
                 }
-            case .downloading:
-                ProgressView()
-                    .controlSize(.large)
-            default:
-                EmptyView()
+            } else if waveform.isEmpty {
+                Color.clear.frame(height: containerHeight)
+            } else {
+                WaveformBarsView(samples: waveform)
+                    .transition(.opacity.animation(.easeInOut))
             }
         }
-        .frame(height: BirdSpacing.loadinViewSpacingHeight / 3)
+        .frame(height: containerHeight)
         .frame(maxWidth: .infinity)
         .padding(.horizontal, BirdSpacing.screenHorizontal)
     }
 }
-
 
 #Preview("Waveform") {
     VStack(spacing: 40) {

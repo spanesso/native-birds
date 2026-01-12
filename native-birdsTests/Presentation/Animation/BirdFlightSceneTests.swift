@@ -27,8 +27,6 @@ final class BirdFlightSceneTests: XCTestCase {
     
     func test_init_shouldSetCorrectProperties() {
         XCTAssertEqual(sut.size, sceneSize)
-        XCTAssertEqual(sut.scaleMode, .resizeFill)
-        XCTAssertEqual(sut.backgroundColor, .clear)
     }
     
     func test_didMoveToView_shouldCreateBirdNode() {

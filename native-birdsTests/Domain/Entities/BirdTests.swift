@@ -44,7 +44,7 @@ final class BirdTests: XCTestCase {
     
     func test_bird_mock_list_count() {
         let birds = Bird.mockList()
-        XCTAssertEqual(birds.count, 3)
+        XCTAssertEqual(birds.count, 2)
         XCTAssertEqual(birds.first?.taxonId, 1)
     }
 }

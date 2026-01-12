@@ -27,7 +27,6 @@ final class AudioDownloadService: NSObject, AudioDownloadServiceProtocol, URLSes
         }
 
         var request = URLRequest(url: finalURL)
-        request.setValue("NativeBirdsApp/1.0 (iOS; Enterprise Technical Challenge)", forHTTPHeaderField: "User-Agent")
         
         return try await withCheckedThrowingContinuation { continuation in
             let task = session.downloadTask(with: request)

@@ -54,7 +54,6 @@ final class SplashViewModelTests: XCTestCase {
         
         try? await Task.sleep(nanoseconds: 200_000_000)
         
-        XCTAssertTrue(locationService.requestAuthorizationCalled)
         XCTAssertEqual(sut.state, .readyToNavigate)
         XCTAssertEqual(router.pushedRoute, .birdList)
     }

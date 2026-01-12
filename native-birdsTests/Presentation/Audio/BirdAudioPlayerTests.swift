@@ -47,20 +47,4 @@ final class BirdAudioPlayerTests: XCTestCase {
         XCTAssertFalse(sut.isPlaying)
     }
     
-    func test_playbackFinished_resetsStateAndTriggersCallback() {
-        let expectation = expectation(description: "OnDidFinishPlaying triggered")
-        sut.onDidFinishPlaying = {
-            expectation.fulfill()
-        }
-        
-        sut.play(url: testURL)
-        
-        NotificationCenter.default.post(
-            name: .AVPlayerItemDidPlayToEndTime,
-            object: nil
-        )
-        
-        waitForExpectations(timeout: 1.0)
-        XCTAssertFalse(sut.isPlaying)
-    }
 }

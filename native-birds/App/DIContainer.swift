@@ -18,27 +18,33 @@ final class DIContainer{
     
     private init(
         router: AppRouter,
+        
         remoteConfig: RemoteConfigProtocol,
         locationService: LocationServiceProtocol,
         birdsRepository: BirdsRepositoryProtocol,
-        fetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol,
+        fetchNearbyBirdsUseCase:  FetchNearbyBirdsUseCaseProtocol,
+        
         imageCache: BirdImageCacheProtocol
     ) {
         self.router = router
         self.remoteConfig = remoteConfig
+        
         self.locationService = locationService
         self.birdsRepository = birdsRepository
+        
         self.fetchNearbyBirdsUseCase = fetchNearbyBirdsUseCase
         self.imageCache = imageCache
     }
     
     static func construct() -> DIContainer {
         let router = AppRouter()
+       
         let remoteConfig = RemoteConfigRepository()
         let locationService = LocationService()
         
-        let client = URLSessionNetworkClient()
+        let client =  URLSessionNetworkClient()
         let birdsRepo = BirdsRepository(client: client)
+        
         let useCase = FetchNearbyBirdsUseCase(repo: birdsRepo)
         let cache = BirdImageCache()
         

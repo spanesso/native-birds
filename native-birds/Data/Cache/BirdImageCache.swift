@@ -4,6 +4,7 @@
 //
 //  Created by PANESSO Alfredo Sebastian on 10/01/26.
 //
+//
 
 import Foundation
 import UIKit
@@ -13,12 +14,10 @@ actor BirdImageCache: BirdImageCacheProtocol {
     private let memory = NSCache<NSURL, UIImage>()
     private let ttl: TimeInterval = 60 * 60 * 24 * 15
 
-    private let folderURL: URL
+     private let disk: DiskTTLCache
 
     init() {
-        let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        folderURL = caches.appendingPathComponent("BirdImages", isDirectory: true)
-        try? FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
+         self.disk = DiskTTLCache(folderName: "BirdImages", ttl: ttl)
     }
 
     func image(for url: URL) async -> UIImage? {
@@ -26,22 +25,16 @@ actor BirdImageCache: BirdImageCacheProtocol {
             return img
         }
 
-        let fileURL = filePath(for: url)
+         let fileURL = await disk.fileURL(for: url.absoluteString, fileExtension: "jpg")
 
-        guard let attrs =   try?   FileManager.default.attributesOfItem(atPath: fileURL.path),
-              let modified = attrs[.modificationDate] as? Date
-        else {
-            return nil
-        }
+         await disk.removeIfExpired(fileURL)
 
-        if Date().timeIntervalSince(modified) > ttl {
-            try? FileManager.default.removeItem(at: fileURL)
+         guard await disk.exists(fileURL) else {
             return nil
         }
 
         guard let data = try? Data(contentsOf: fileURL),
-              let img = UIImage(data: data)
-        else {
+              let img = UIImage(data: data) else {
             return nil
         }
 
@@ -52,25 +45,17 @@ actor BirdImageCache: BirdImageCacheProtocol {
     func store(_ image: UIImage, for url: URL) async {
         memory.setObject(image, forKey: url as NSURL)
 
-        let fileURL = filePath(for: url)
-        
+         let fileURL = await disk.fileURL(for: url.absoluteString, fileExtension: "jpg")
+
         guard let data = image.jpegData(compressionQuality: 0.9) else {
             return
         }
-        
-        
-        try? data.write(to: fileURL, options: [.atomic])
-    }
 
-    private func filePath(for url: URL) -> URL {
-        let name = sha256(url.absoluteString)
-        
-        
-        return folderURL.appendingPathComponent("\(name).jpg")
-        
-    }
+        try? data.write(
+            to: fileURL,
+            options: [.atomic]
+        )
 
-    private func sha256(_ input: String) -> String {
-        return String(input.hashValue.magnitude, radix: 16)
+         await disk.touch(fileURL)
     }
 }

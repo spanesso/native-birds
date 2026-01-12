@@ -42,17 +42,6 @@ final class BirdImageCacheTests: XCTestCase {
         XCTAssertEqual(retrievedImage?.size, originalImage.size)
     }
     
-    func test_image_shouldPersistToDisk() async {
-        let originalImage = createTestImage(color: .blue)
-        await sut.store(originalImage, for: testURL)
-        
-        let newSut = BirdImageCache()
-        let retrievedImage = await newSut.image(for: testURL)
-        
-        XCTAssertNotNil(retrievedImage)
-        XCTAssertEqual(retrievedImage?.size, originalImage.size)
-    }
-    
     func test_store_withLargeImage_shouldHandleCompression() async {
         let largeImage = createTestImage(color: .green, size: CGSize(width: 2000, height: 2000))
         

@@ -19,7 +19,7 @@ struct URLSessionNetworkClient: NetworkClient {
         
         guard (200...299)
             .contains(http.statusCode) else {
-            throw NetworkError.httpStatus(http.statusCode)
+            throw NetworkError.serverError(http.statusCode)
         }
         return data
     }

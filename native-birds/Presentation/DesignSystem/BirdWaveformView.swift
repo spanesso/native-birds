@@ -16,10 +16,6 @@ struct BirdWaveformView: View {
     var body: some View {
             ZStack {
                 switch audioState {
-                case .downloading:
-                    ProgressView()
-                        .controlSize(.small)
-                
                 case .ready, .playing, .paused:
                     if waveform.isEmpty {
                         WaveformBarsView(samples: Array(repeating: 0.1, count: 40))

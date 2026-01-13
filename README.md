@@ -41,7 +41,7 @@ The app is structured in layers:
   - Design System: spacing, typography, theme, reusable UI components
 
 - **Presentation Layer**
-  - ViewModels (`SplashViewModel`, `BirdsListViewModel`, `BirdDetailViewModel`) injected via `DIContainer` 
+  - ViewModels (`SplashViewModel`, `BirdsListViewModel`, `BirdDetailViewModel`)
 
 - **Domain Layer**
   - Use Cases:

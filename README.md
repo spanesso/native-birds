@@ -6,11 +6,13 @@
 
 ## Design Proposal (UI)
 
-> ![Design Proposal](docs/proposal.png)
+| Design Proposal | UI Animation |
+|-----------------|--------------|
+| ![Design Proposal](docs/proposal.png) | ![UI Animation](docs/mobile_app.gif) |
 
 ---
 
-## Architectur Diagram
+## Architecture Diagram
 
 > ![Architecture Diagram](docs/diagram.png)
 
@@ -120,6 +122,5 @@ Centralized tokens for:
 - **Architecture:** Clean Architecture with protocol-driven boundaries (testable use cases / repositories).
 - **Coverage:** 70% (project target / current status to be maintained and improved).
 
----
 
 

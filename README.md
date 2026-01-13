@@ -6,9 +6,20 @@
 
 ## Design Proposal (UI)
 
-| Design Proposal | UI Animation |
-|-----------------|--------------|
-| ![Design Proposal](docs/proposal.png) | ![UI Animation](docs/mobile_app.gif) |
+<table width="100%">
+  <tr>
+    <th width="65%">Design Proposal</th>
+    <th width="35%">UI Animation</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="docs/proposal.png" width="100%" />
+    </td>
+    <td align="center">
+      <img src="docs/mobile_app.gif" width="90%" />
+    </td>
+  </tr>
+</table>
 
 ---
 

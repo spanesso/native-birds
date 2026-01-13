@@ -20,6 +20,6 @@ final class AppRouter: ObservableObject,RouterProtocol {
     }
     
     func pop() {
-        path.popLast()
+        _ = path.popLast()
     }
 }

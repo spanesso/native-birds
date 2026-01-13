@@ -26,7 +26,7 @@ final class AudioDownloadService: NSObject, AudioDownloadServiceProtocol, URLSes
             }
         }
 
-        var request = URLRequest(url: finalURL)
+        let request = URLRequest(url: finalURL)
         
         return try await withCheckedThrowingContinuation { continuation in
             let task = session.downloadTask(with: request)

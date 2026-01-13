@@ -38,10 +38,37 @@ final class SplashViewModel: ObservableObject {
     
     func startAdventureTapped() {
         Task {
-            await requestPermissionAndContinue()
+            await handleLocationWorkflow()
         }
     }
     
+    private func handleLocationWorkflow() async {
+        let currentStatus = locationService.authorizationStatus()
+        
+        switch currentStatus {
+        case .authorized:
+            await validateRemoteConfigKeys()
+            
+        case .notDetermined:
+            state = .requestingPermission
+            let newStatus = await locationService.requestAuthorization()
+            
+            if newStatus == .authorized {
+                await validateRemoteConfigKeys()
+            } else {
+                handlePermissionDenied()
+            }
+            
+        case .denied, .restricted:
+            handlePermissionDenied()
+        }
+    }
+    
+    private func handlePermissionDenied() {
+        modalMessage = AppCopy.Splash.Location.permissionRequiredMessage
+        showDeniedModal = true
+        state = .idle
+    }
     func retryPermissionTapped() {
         locationService.openAppSettings()
     }
@@ -58,23 +85,23 @@ final class SplashViewModel: ObservableObject {
         let currentStatus = locationService.authorizationStatus()
         
         switch currentStatus {
-            case .notDetermined:
-                let newStatus = await locationService.requestAuthorization()
-                guard newStatus == .authorized else {
-                    modalMessage = AppCopy.Splash.Location.permissionRequiredMessage
-                    showDeniedModal = true
-                    state = .idle
-                    return
-                }
-                await validateRemoteConfigKeys()
-                
-            case .denied, .restricted:
+        case .notDetermined:
+            let newStatus = await locationService.requestAuthorization()
+            guard newStatus == .authorized else {
                 modalMessage = AppCopy.Splash.Location.permissionRequiredMessage
                 showDeniedModal = true
                 state = .idle
-                
-            case .authorized:
-                await validateRemoteConfigKeys()
+                return
+            }
+            await validateRemoteConfigKeys()
+            
+        case .denied, .restricted:
+            modalMessage = AppCopy.Splash.Location.permissionRequiredMessage
+            showDeniedModal = true
+            state = .idle
+            
+        case .authorized:
+            await validateRemoteConfigKeys()
         }
     }
     

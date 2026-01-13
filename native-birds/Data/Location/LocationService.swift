@@ -28,6 +28,8 @@ final class LocationService: NSObject, LocationServiceProtocol, CLLocationManage
             return current
         }
         
+        if authContinuation != nil { return .notDetermined }
+        
         return await withCheckedContinuation { continuation in
             self.authContinuation = continuation
             self.manager.requestWhenInUseAuthorization()

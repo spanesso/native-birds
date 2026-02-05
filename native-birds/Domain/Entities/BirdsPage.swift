@@ -10,11 +10,9 @@ import Foundation
 struct BirdsPage: Sendable, Equatable {
     let birds: [Bird]
     let page: Int
-    
     let perPage: Int
-    
     let totalResults: Int
-
+    
     var hasMore: Bool {
         (page * perPage) < totalResults
     }

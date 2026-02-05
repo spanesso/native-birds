@@ -6,9 +6,6 @@
 //
 
 protocol RemoteConfigProtocol :Sendable {
-    
     func activate() async -> Bool
-    
     func getAPIKeys() async -> APIKeys
-    
 }

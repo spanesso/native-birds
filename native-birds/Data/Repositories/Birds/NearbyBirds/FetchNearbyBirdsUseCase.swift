@@ -9,7 +9,6 @@ import Foundation
 
 
 struct FetchNearbyBirdsUseCase: FetchNearbyBirdsUseCaseProtocol {
-
     let repo: BirdsRepositoryProtocol
 
     func execute(

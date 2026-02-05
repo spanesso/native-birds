@@ -10,7 +10,6 @@ import SwiftUI
 import SwiftUI
 
 extension View {
-
     func birdAlert(
         isPresented: Binding<Bool>,
         title: String,
@@ -31,7 +30,6 @@ extension View {
         )
     }
 }
-
 
 struct BirdAlertModifier: ViewModifier {
 

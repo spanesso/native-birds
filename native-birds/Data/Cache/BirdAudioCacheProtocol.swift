@@ -8,9 +8,7 @@
 import Foundation
 
 protocol BirdAudioCacheProtocol: Sendable {
-    
     func fileURL( for remoteURL: URL) async -> URL?
-    
     func storeDownloadedFile(
         from tempURL: URL,
         remoteURL: URL) async throws -> URL

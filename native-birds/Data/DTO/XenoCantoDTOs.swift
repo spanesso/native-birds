@@ -8,7 +8,6 @@
 import Foundation
 
 struct XenoCantoRecordingsResponseDTO: Decodable, Sendable {
-    
     let recordings:  [XenoCantoRecordingDTO]
 }
 

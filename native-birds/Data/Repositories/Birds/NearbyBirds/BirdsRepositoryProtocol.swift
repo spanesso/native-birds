@@ -8,13 +8,11 @@
 import Foundation
 
 protocol BirdsRepositoryProtocol: Sendable {
-    
     func fetchNearbyBirds(
         lat: Double,
         lng: Double,
         page: Int,
         perPage: Int,
-        
         bearerToken: String
     ) async throws -> BirdsPage
 }

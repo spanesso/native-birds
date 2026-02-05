@@ -7,67 +7,16 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct SplashView: View {
-    
     @StateObject var viewModel: SplashViewModel
     
-    @ViewBuilder
-    private var birdImage: some View {
-        if let uiImage = UIImage(named: "inca_jay") {
-            Image(uiImage: uiImage)
-                .resizable()
-                .scaledToFit()
-        } else {
-            Image(systemName: "bird.fill")
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(.white.opacity(0.85))
-                .padding(.horizontal, BirdSpacing.imageHorizontal)
-        }
-    }
-    
-    
     var body: some View {
-        ZStack {
-            BirdGradientBackground()
-            
-            birdImage
-                .frame(width: BirdSize.splashImage, height: BirdSize.splashImage)
-                .padding(.horizontal, BirdSpacing.imageHorizontal)
-            
-            VStack {
-                VStack(spacing: BirdSpacing.contentVertical) {
-                    BirdLabel(
-                        text: AppCopy.Splash.SplashViewCopy.title,
-                        style: .title
-                    )
-                    
-                    BirdLabel(
-                        text: AppCopy.Splash.SplashViewCopy.subTitle,
-                        style: .subtitle
-                    )
-                }
-                .padding(.top, BirdSpacing.large)
-                .padding(.horizontal, BirdSpacing.screenHorizontal)
-                
-                Spacer()
-                
-                if viewModel.state == .idle {
-                    BirdButton(
-                        title: AppCopy.Splash.Actions.startAdventure,
-                        state: viewModel.state == .requestingPermission ||
-                        viewModel.state == .validatingRemoteConfig
-                        ? .loading
-                        : .normal
-                    ) {
-                        viewModel.startAdventureTapped()
-                    }
-                    .padding()
-                }
-            }.padding(.horizontal, BirdSpacing.screenHorizontal)
-        }
+        SplashContentView(
+            state: viewModel.state,
+            onStartAction: {
+                viewModel.startAdventureTapped()
+            }
+        )
         .navigationBarBackButtonHidden(true)
         .onAppear {
             viewModel.onAppear()
@@ -88,14 +37,3 @@ struct SplashView: View {
         }
     }
 }
-
-#Preview("Splash – Idle") {
-    SplashView(
-        viewModel: SplashViewModel(
-            router: MockRouter(),
-            remoteConfig: MockRemoteConfig(),
-            locationService: MockLocationService()
-        )
-    )
-}
-

@@ -116,7 +116,6 @@ final class BirdsListViewModel: ObservableObject {
     private func prepareState(isFirstPage: Bool) {
         if isFirstPage {
             state = .loading
-            birds = []
             currentPage = 1
             canLoadMore = true
             cachedCoordinate = nil
@@ -159,7 +158,7 @@ final class BirdsListViewModel: ObservableObject {
     }
 
     private func handleError(_ error: Error, isFirstPage: Bool) {
-        if !isFirstPage, !birds.isEmpty {
+        if !isFirstPage {
             state = .loaded
         } else {
             state = .error(error.localizedDescription)

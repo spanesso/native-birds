@@ -37,7 +37,6 @@ final class BirdFlightScene: SKScene {
 
         birdNode.position = CGPoint(
             x:  size.width /  2,
-            
             y: size.height / 2
         )
 
@@ -48,7 +47,6 @@ final class BirdFlightScene: SKScene {
 
     private func startFlying() {
         let textures = loadTextures(
-            
             columns: 3,
             rows: 3,
             textureName: spriteSheetName
@@ -74,9 +72,7 @@ final class BirdFlightScene: SKScene {
 
         let texture = SKTexture(imageNamed: textureName)
         let frameWidth = 1.0 / CGFloat(columns)
-        
         let frameHeight = 1.0 / CGFloat(rows)
-
         var frames: [SKTexture] = []
 
         for row in 0..<rows {

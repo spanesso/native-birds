@@ -11,7 +11,6 @@ internal import Combine
 
 @MainActor
 final class BirdDetailViewModel: ObservableObject {
-    
     @Published private(set) var state: BirdDetailUIState = .idle
     @Published private(set) var audioState: BirdAudioUIState = .idle
     @Published private(set) var waveform: [CGFloat] = []
@@ -80,9 +79,13 @@ final class BirdDetailViewModel: ObservableObject {
             
             audioState = .downloading(progress: 0)
             
-            let tempURL = try await downloader.download(remoteURL: remote) { [weak self] progress in
-                Task { @MainActor in
-                    self?.audioState = .downloading(progress: progress)
+            let tempURL = try await downloader.download(
+                remoteURL: remote
+            ) { progress in
+                Task {
+                    await MainActor.run {
+                        self.audioState = .downloading(progress: progress)
+                    }
                 }
             }
             

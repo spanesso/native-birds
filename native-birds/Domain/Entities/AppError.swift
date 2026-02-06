@@ -26,3 +26,7 @@ enum AppError: LocalizedError, Equatable {
         }
     }
 }
+
+enum DiskTTLCacheError: Error {
+    case cachesDirectoryNotFound
+}

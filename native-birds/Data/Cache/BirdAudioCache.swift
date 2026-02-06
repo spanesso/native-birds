@@ -13,7 +13,18 @@ actor BirdAudioCache: BirdAudioCacheProtocol {
     private let disk: DiskTTLCache
     
     init() {
-        self.disk = DiskTTLCache(folderName: "BirdAudio", ttl: ttl)
+        do {
+            self.disk = try DiskTTLCache(
+                folderName: "BirdAudio",
+                ttl: ttl
+            )
+        } catch {
+            assertionFailure("❌ Failed to initialize BirdAudio Disk Cache: \(error)")
+            self.disk = try! DiskTTLCache(
+                folderName: "BirdAudio",
+                ttl: ttl
+            )
+        }
     }
     
     func fileURL(for remoteURL: URL) async -> URL? {

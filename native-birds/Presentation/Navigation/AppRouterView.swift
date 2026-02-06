@@ -4,24 +4,23 @@
 //
 //  Created by PANESSO Alfredo Sebastian on 7/01/26.
 //
-
 import SwiftUI
 
 struct AppRouterView: View {
     @ObservedObject var router: AppRouter
-    let container: DIContainer
-    
+    let container: AppDIContainer
+
     var body: some View {
         NavigationStack(path: $router.path) {
-            container.makeSplashView()
-            .navigationDestination(for: AppRoute.self) { route in
-                switch route {
-                case .birdList:
-                    container.makeBirdsListView()
-                case .birdDetail(let bird):
-                    container.makeBirdDetailView(bird: bird)
+            container.splashFactory.makeView()
+                .navigationDestination(for: AppRoute.self) { route in
+                    switch route {
+                        case .birdList:
+                            container.birdsListFactory.makeView()
+                        case .birdDetail(let bird):
+                            container.birdDetailFactory.makeView(bird: bird)
+                    }
                 }
-            }
         }
     }
 }

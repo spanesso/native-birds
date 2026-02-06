@@ -13,15 +13,18 @@ struct BirdHeroImage: View {
     let cache: BirdImageCacheProtocol
 
     var body: some View {
-        ZStack {
-            BirdRemoteImage(
-                url: url,
-                hugeImage : true,
-                cache: cache)
-                .aspectRatio(contentMode: .fill)
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        GeometryReader { geometry in
+            ZStack {
+                BirdRemoteImage(
+                    url: url,
+                    hugeImage: true,
+                    cache: cache
+                )
+                .scaledToFill()
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .contentShape(Rectangle())
                 .clipped()
- 
+            }
         }
         .background(Color.black)
         .ignoresSafeArea()

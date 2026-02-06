@@ -27,4 +27,5 @@ enum BirdSpacing {
     static let loadinViewSpacing: CGFloat = 20
     static let loadinViewSpacingWidth: CGFloat = 260
     static let loadinViewSpacingHeight: CGFloat = 180
+    static let maxHeightScreenDetailContentSheet: CGFloat = 0.38
 }

@@ -39,6 +39,9 @@ struct BirdDetailContent: View {
                     waveform: waveform,
                     onPlayToggle: onPlayToggle
                 )
+                .frame(
+                    maxHeight: UIScreen.main.bounds.height * BirdSpacing.maxHeightScreenDetailContentSheet,
+                    alignment: .bottom)
             }
             .zIndex(3)
         }

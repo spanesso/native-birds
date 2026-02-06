@@ -19,6 +19,7 @@ final class BirdsListViewModel: ObservableObject {
     private let locationService: LocationServiceProtocol
     private let remoteConfig: RemoteConfigProtocol
     private let fetchNearbyBirds: FetchNearbyBirdsUseCaseProtocol
+    private let dataMerger: BirdDataMergerProtocol
 
     private let perPage: Int = 21
     private var isRequestInProcess = false
@@ -27,11 +28,13 @@ final class BirdsListViewModel: ObservableObject {
     init(
         locationService: LocationServiceProtocol,
         remoteConfig: RemoteConfigProtocol,
-        fetchNearbyBirds: FetchNearbyBirdsUseCaseProtocol
+        fetchNearbyBirds: FetchNearbyBirdsUseCaseProtocol,
+        dataMerger: BirdDataMergerProtocol
     ) {
         self.locationService = locationService
         self.remoteConfig = remoteConfig
         self.fetchNearbyBirds = fetchNearbyBirds
+        self.dataMerger = dataMerger
     }
 
     func onAppear() {
@@ -89,10 +92,8 @@ final class BirdsListViewModel: ObservableObject {
             let token = try await validatedToken()
 
             let pageResult = try await fetchNearbyBirds.execute(
-                
                 lat: coordinate.latitude,
                 lng: coordinate.longitude,
-                
                 page:  request.targetPage,
                 perPage: perPage,
                 bearerToken: token
@@ -105,11 +106,7 @@ final class BirdsListViewModel: ObservableObject {
             )
 
         } catch {
-            
-            handleError(
-                error,
-                isFirstPage: request.isFirstPage
-            )
+            handleError( error, isFirstPage: request.isFirstPage )
         }
     }
 
@@ -147,7 +144,7 @@ final class BirdsListViewModel: ObservableObject {
         isFirstPage: Bool,
         targetPage: Int
     ) {
-        birds = mergeDeduplicate(
+        birds = dataMerger.mergeAndDeduplicate(
             existing: isFirstPage ? [] : birds,
             incoming: result.items
         )
@@ -163,42 +160,6 @@ final class BirdsListViewModel: ObservableObject {
         } else {
             state = .error(error.localizedDescription)
         }
-    }
-
-    private func mergeDeduplicate(
-        existing: [Bird],
-        incoming: [Bird]
-    ) -> [Bird] {
-
-        var indexByName: [String: Int] = [:]
-        var result: [Bird] = []
-
-        func score(_ bird: Bird) -> Int {
-            var score = 0
-            if bird.defaultPhotoUrl != nil { score += 1 }
-            if bird.defaultPhotoMediumUrl != nil { score += 1 }
-            if let common = bird.preferredCommonName,
-               !common.trimmingCharacters(in: .whitespaces).isEmpty {
-                score += 1
-            }
-            return score
-        }
-
-        func upsert(_ bird: Bird) {
-            if let index = indexByName[bird.name] {
-                if score(bird) > score(result[index]) {
-                    result[index] = bird
-                }
-            } else {
-                indexByName[bird.name] = result.count
-                result.append(bird)
-            }
-        }
-
-        existing.forEach(upsert)
-        incoming.forEach(upsert)
-
-        return result
     }
 }
 

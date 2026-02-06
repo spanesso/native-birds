@@ -18,9 +18,6 @@ struct SplashView: View {
             }
         )
         .navigationBarBackButtonHidden(true)
-        .onAppear {
-            viewModel.onAppear()
-        }
         .birdAlert(
             isPresented: $viewModel.showDeniedModal,
             title: AppCopy.Splash.Location.permissionRequiredTitle,

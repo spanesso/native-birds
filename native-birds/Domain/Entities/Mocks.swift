@@ -230,6 +230,7 @@ func makeBirdsListViewModel(
     let mockLocation = MockLocationService()
     let mockRemote = MockRemoteConfig()
     let mockUseCase = MockFetchNearbyBirdsUseCase()
+    let datamerger = BirdDataMerger()
     
     mockLocation.status = .authorized
     mockRemote.activateResult = true
@@ -237,7 +238,8 @@ func makeBirdsListViewModel(
     let vm = BirdsListViewModel(
         locationService: mockLocation,
         remoteConfig: mockRemote,
-        fetchNearbyBirds: mockUseCase
+        fetchNearbyBirds: mockUseCase,
+        dataMerger: datamerger
     )
     
     vm._setPreview(

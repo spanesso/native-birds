@@ -22,10 +22,6 @@ final class AppDIContainer {
         self.core = core
         self.splashFactory = SplashFactory(core: core)
         self.birdsListFactory = BirdsListFactory(core: core, birds: birds)
-        self.birdDetailFactory = BirdDetailFactory(
-            core: core,
-            birds: birds,
-            audio: audio
-        )
+        self.birdDetailFactory = BirdDetailFactory(core: core,birds: birds,audio: audio)
     }
 }

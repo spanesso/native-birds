@@ -19,22 +19,11 @@ struct BirdsListView: View {
             switch viewModel.state {
                 case .loaded, .loadingMore:
                     BirdsListContentView(
+                        delegate: self,
                         birds: viewModel.birds,
                         state: viewModel.state,
                         canLoadMore: viewModel.canLoadMore,
-                        imageCache: imageCache,
-                        onBirdSelected: { bird in
-                            router.push(.birdDetail(bird: bird))
-                        },
-                        onAppearBird: { bird in
-                            viewModel.loadNextPageIfNeeded(currentItem: bird)
-                        },
-                        onRetryPagination: {
-                            Task { await viewModel.loadNextPage() }
-                        },
-                        onRefresh: {
-                            await viewModel.loadFirstPage()
-                        }
+                        imageCache: imageCache
                     )
                     
                 case .idle, .loading:
@@ -61,5 +50,23 @@ struct BirdsListView: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear { viewModel.onAppear() }
+    }
+}
+
+extension BirdsListView: BirdListViewDelegate {
+    func onBirdSelected(_ bird: Bird) {
+        router.push(.birdDetail(bird: bird))
+    }
+    
+    func onAppearBird(_ bird: Bird) {
+        viewModel.loadNextPageIfNeeded(currentItem: bird)
+    }
+    
+    func onRetryPagination() {
+        Task { await viewModel.loadNextPage() }
+    }
+    
+    func onRefresh() async {
+        await viewModel.loadFirstPage()
     }
 }

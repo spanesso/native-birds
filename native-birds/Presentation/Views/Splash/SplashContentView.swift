@@ -7,41 +7,35 @@
 
 import SwiftUI
 
+protocol SplashViewDelegate {
+    func onStartAdventure()
+}
+
 struct SplashContentView: View {
     let state: SplashViewState
-    let onStartAction: () -> Void
+    let delegate: SplashViewDelegate
     
     var body: some View {
         ZStack {
             BirdGradientBackground()
             
             birdImage
-                .frame(width: BirdSize.splashImage, height: BirdSize.splashImage)
+                .frame(
+                    width: BirdSize.splashImage,
+                    height: BirdSize.splashImage)
                 .padding(.horizontal, BirdSpacing.imageHorizontal)
             
             VStack {
-                VStack(spacing: BirdSpacing.contentVertical) {
-                    BirdLabel(
-                        text: AppCopy.Splash.SplashViewCopy.title,
-                        style: .title
-                    )
-                    
-                    BirdLabel(
-                        text: AppCopy.Splash.SplashViewCopy.subTitle,
-                        style: .subtitle
-                    )
-                }
-                .padding(.top, BirdSpacing.large)
-                .padding(.horizontal, BirdSpacing.screenHorizontal)
+                renderLabels()
                 
                 Spacer()
                 
-                if state == .idle || state == .requestingPermission || state == .validatingRemoteConfig {
+                if shouldShowButton {
                     BirdButton(
                         title: AppCopy.Splash.Actions.startAdventure,
-                        state: (state == .requestingPermission || state == .validatingRemoteConfig) ? .loading : .normal
+                        state: isLoading ? .loading : .normal
                     ) {
-                        onStartAction()
+                        delegate.onStartAdventure()
                     }
                     .padding()
                     .disabled(state != .idle)
@@ -49,6 +43,31 @@ struct SplashContentView: View {
             }
             .padding(.horizontal, BirdSpacing.screenHorizontal)
         }
+    }
+    
+    private var isLoading: Bool {
+        state == .requestingPermission || state == .validatingRemoteConfig
+    }
+    
+    private var shouldShowButton: Bool {
+        state == .idle || state == .requestingPermission || state == .validatingRemoteConfig
+    }
+    
+    @ViewBuilder
+    private func renderLabels() -> some View {
+        VStack(spacing: BirdSpacing.contentVertical) {
+            BirdLabel(
+                text: AppCopy.Splash.SplashViewCopy.title,
+                style: .title
+            )
+            
+            BirdLabel(
+                text: AppCopy.Splash.SplashViewCopy.subTitle,
+                style: .subtitle
+            )
+        }
+        .padding(.top, BirdSpacing.large)
+        .padding(.horizontal, BirdSpacing.screenHorizontal)
     }
     
     @ViewBuilder
@@ -70,34 +89,34 @@ struct SplashContentView: View {
 #Preview("Splash – Idle (Initial)") {
     SplashContentView(
         state: .idle,
-        onStartAction: { print("Start tapped") }
+        delegate: SplashDelegateMock()
     )
 }
 
 #Preview("Splash – Requesting Permission (Loading)") {
     SplashContentView(
         state: .requestingPermission,
-        onStartAction: {}
+        delegate: SplashDelegateMock()
     )
 }
 
 #Preview("Splash – Validating Config (Loading)") {
     SplashContentView(
         state: .validatingRemoteConfig,
-        onStartAction: {}
+        delegate: SplashDelegateMock()
     )
 }
 
 #Preview("Splash – Ready to Navigate") {
     SplashContentView(
         state: .readyToNavigate,
-        onStartAction: {}
+        delegate: SplashDelegateMock()
     )
 }
 
 #Preview("Splash – Failed (Error)") {
     SplashContentView(
         state: .failed("Unexpected error occurred"),
-        onStartAction: {}
+        delegate: SplashDelegateMock()
     )
 }

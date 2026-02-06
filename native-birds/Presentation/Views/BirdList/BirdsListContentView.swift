@@ -7,16 +7,19 @@
 
 import SwiftUI
 
+protocol BirdListViewDelegate {
+    func onBirdSelected(_ bird: Bird)
+    func onAppearBird(_ bird: Bird)
+    func onRetryPagination()
+    func onRefresh() async
+}
+
 struct BirdsListContentView: View {
+    let delegate: BirdListViewDelegate
     let birds: [Bird]
     let state: BirdsListUIState
     let canLoadMore: Bool
     let imageCache: BirdImageCacheProtocol
-    
-    let onBirdSelected: (Bird) -> Void
-    let onAppearBird: (Bird) -> Void
-    let onRetryPagination: () -> Void
-    let onRefresh: () async -> Void
 
     var body: some View {
         ScrollView {
@@ -34,10 +37,10 @@ struct BirdsListContentView: View {
                         BirdListItem(bird: bird, cache: imageCache)
                             .padding(.horizontal, BirdSpacing.screenHorizontal)
                             .onAppear {
-                                onAppearBird(bird)
+                                delegate.onAppearBird(bird)
                             }
                             .onTapGesture {
-                                onBirdSelected(bird)
+                                delegate.onBirdSelected(bird)
                             }
                     }
                     
@@ -47,7 +50,7 @@ struct BirdsListContentView: View {
             }
         }
         .refreshable {
-            await onRefresh()
+            await delegate.onRefresh()
         }
     }
 
@@ -59,7 +62,7 @@ struct BirdsListContentView: View {
                     .padding(.vertical, 14)
             } else {
                 BirdButton(title: AppCopy.Global.retry, state: .normal) {
-                    onRetryPagination()
+                    delegate.onRetryPagination()
                 }
                 .padding(.horizontal, BirdSpacing.screenHorizontal)
                 .padding(.vertical, 8)
@@ -72,42 +75,33 @@ struct BirdsListContentView: View {
 
 #Preview("Loaded - Full State") {
     BirdsListContentView(
+        delegate:BirdListViewDelegateMock(),
         birds: Bird.mockList(),
         state: .loaded,
         canLoadMore: true,
-        imageCache: MockBirdImageCache(),
-        onBirdSelected: { bird in print("Selected: \(bird.name)") },
-        onAppearBird: { bird in print("Appeared: \(bird.name)") },
-        onRetryPagination: {},
-        onRefresh: {}
+        imageCache: MockBirdImageCache()
     )
     .background(BirdGradientBackground())
 }
 
 #Preview("Loading More - Pagination") {
     BirdsListContentView(
+        delegate:BirdListViewDelegateMock(),
         birds: Array(Bird.mockList().prefix(3)),
         state: .loadingMore,
         canLoadMore: true,
-        imageCache: MockBirdImageCache(),
-        onBirdSelected: { _ in },
-        onAppearBird: { _ in },
-        onRetryPagination: {},
-        onRefresh: {}
+        imageCache: MockBirdImageCache()
     )
     .background(BirdGradientBackground())
 }
 
 #Preview("Last Page - No More Data") {
     BirdsListContentView(
+        delegate:BirdListViewDelegateMock(),
         birds: Array(Bird.mockList().prefix(5)),
         state: .loaded,
         canLoadMore: false,
-        imageCache: MockBirdImageCache(),
-        onBirdSelected: { _ in },
-        onAppearBird: { _ in },
-        onRetryPagination: {},
-        onRefresh: {}
+        imageCache: MockBirdImageCache()
     )
     .background(BirdGradientBackground())
 }

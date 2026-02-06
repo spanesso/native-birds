@@ -13,9 +13,7 @@ struct SplashView: View {
     var body: some View {
         SplashContentView(
             state: viewModel.state,
-            onStartAction: {
-                viewModel.startAdventureTapped()
-            }
+            delegate : self
         )
         .navigationBarBackButtonHidden(true)
         .birdAlert(
@@ -32,5 +30,11 @@ struct SplashView: View {
         ) {
             viewModel.retryKeysTapped()
         }
+    }
+}
+
+extension SplashView: SplashViewDelegate {
+    func onStartAdventure(){
+        viewModel.startAdventureTapped()
     }
 }

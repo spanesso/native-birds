@@ -218,6 +218,31 @@ extension BirdRecording {
     }
 }
 
+class SplashDelegateMock: SplashViewDelegate {
+    func onStartAdventure() {
+        print("Mock: Adventure Started!")
+    }
+}
+
+class BirdListViewDelegateMock: BirdListViewDelegate {
+    func onBirdSelected(_ bird: Bird) {
+        print("Mock: onBirdSelected")
+    }
+    
+    func onAppearBird(_ bird: Bird) {
+        print("Mock: onAppearBird")
+    }
+    
+    func onRetryPagination() {
+        print("Mock: onRetryPagination")
+    }
+    
+    func onRefresh() async {
+        print("Mock: onRefresh")
+    }
+}
+
+
 #if DEBUG
 
 @MainActor

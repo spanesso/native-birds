@@ -16,19 +16,26 @@ struct BirdDetailView: View {
     
     var body: some View {
         BirdDetailContent(
+            delegate: self,
             bird: bird,
             imageCache: imageCache,
             audioState: viewModel.audioState,
             waveform: viewModel.waveform,
-            audioPlayer: audioPlayer,
-            onBack: onBack,
-            onPlayToggle: {
-                viewModel.togglePlay(using: audioPlayer)
-            }
+            audioPlayer: audioPlayer
         )
         .navigationBarBackButtonHidden(true)
         .onAppear {
             viewModel.onAppear()
         }
+    }
+}
+
+extension BirdDetailView: BirdDetailContentViewDelegate {
+    func onBackAction() {
+        onBack()
+    }
+    
+    func onPlayToggle() {
+        viewModel.togglePlay(using: audioPlayer)
     }
 }

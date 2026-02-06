@@ -7,15 +7,19 @@
 
 import SwiftUI
 
+
+protocol BirdDetailContentViewDelegate {
+    func onBackAction()
+    func onPlayToggle()
+}
+
 struct BirdDetailContent: View {
+    let delegate: BirdDetailContentViewDelegate
     let bird: Bird
     let imageCache: BirdImageCacheProtocol
     let audioState: BirdAudioUIState
     let waveform: [CGFloat]
     let audioPlayer: BirdAudioPlayer
-    
-    let onBack: () -> Void
-    let onPlayToggle: () -> Void
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -26,7 +30,7 @@ struct BirdDetailContent: View {
             
             backgroundGradient
             
-            BirdBackButton(action: onBack)
+            BirdBackButton(action: delegate.onBackAction)
                 .zIndex(2)
             
             VStack {
@@ -37,7 +41,7 @@ struct BirdDetailContent: View {
                     wikipediaURL: bird.wikipediaURL,
                     audioState: audioState,
                     waveform: waveform,
-                    onPlayToggle: onPlayToggle
+                    onPlayToggle: delegate.onPlayToggle
                 )
                 .frame(
                     maxHeight: UIScreen.main.bounds.height * BirdSpacing.maxHeightScreenDetailContentSheet,
@@ -62,36 +66,33 @@ struct BirdDetailContent: View {
 
 #Preview("Bird Detail - Loading Audio") {
     BirdDetailContent(
+        delegate: BirdDetailContentViewDelegateMock(),
         bird: .preview(),
         imageCache: MockBirdImageCache(),
         audioState: .downloading(progress: 0.5),
         waveform: [],
-        audioPlayer: BirdAudioPlayer(),
-        onBack: {},
-        onPlayToggle: {}
+        audioPlayer: BirdAudioPlayer()
     )
 }
 
 #Preview("Bird Detail - Ready State") {
     BirdDetailContent(
+        delegate: BirdDetailContentViewDelegateMock(),
         bird: .preview(english: "Great Kiskadee", scientific: "Pitangus sulphuratus"),
         imageCache: MockBirdImageCache(),
         audioState: .ready(localFileURL: URL(fileURLWithPath: "")),
         waveform: [0.2, 0.8, 0.4, 0.9, 0.5, 0.7, 0.3],
-        audioPlayer: BirdAudioPlayer(),
-        onBack: {},
-        onPlayToggle: {}
+        audioPlayer: BirdAudioPlayer()
     )
 }
 
 #Preview("Bird Detail - Playing State") {
     BirdDetailContent(
+        delegate: BirdDetailContentViewDelegateMock(),
         bird: .preview(),
         imageCache: MockBirdImageCache(),
         audioState: .playing(localFileURL: URL(fileURLWithPath: "")),
         waveform: [0.5, 0.5, 0.5, 0.5, 0.5],
-        audioPlayer: BirdAudioPlayer(),
-        onBack: {},
-        onPlayToggle: {}
+        audioPlayer: BirdAudioPlayer()
     )
 }

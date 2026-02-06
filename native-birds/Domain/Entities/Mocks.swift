@@ -242,6 +242,16 @@ class BirdListViewDelegateMock: BirdListViewDelegate {
     }
 }
 
+class BirdDetailContentViewDelegateMock: BirdDetailContentViewDelegate {
+    func onBackAction() {
+        print("Mock: onBackAction")
+    }
+    
+    func onPlayToggle() {
+        print("Mock: onPlayToggle")
+    }
+}
+
 
 #if DEBUG
 

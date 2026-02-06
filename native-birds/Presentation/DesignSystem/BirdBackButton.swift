@@ -26,3 +26,14 @@ struct BirdBackButton: View {
         .padding(.top, 16)
     }
 }
+
+#Preview("Estados Básicos") {
+    VStack(spacing: 40) {
+        BirdBackButton(action: { print("Back pressed") })
+        
+        BirdBackButton(action: {})
+            .preferredColorScheme(.dark)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.gray.opacity(0.2))
+}

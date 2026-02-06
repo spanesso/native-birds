@@ -72,7 +72,6 @@ struct BirdsListContentView: View {
     }
 }
 
-
 #Preview("Loaded - Full State") {
     BirdsListContentView(
         delegate:BirdListViewDelegateMock(),
@@ -90,17 +89,6 @@ struct BirdsListContentView: View {
         birds: Array(Bird.mockList().prefix(3)),
         state: .loadingMore,
         canLoadMore: true,
-        imageCache: MockBirdImageCache()
-    )
-    .background(BirdGradientBackground())
-}
-
-#Preview("Last Page - No More Data") {
-    BirdsListContentView(
-        delegate:BirdListViewDelegateMock(),
-        birds: Array(Bird.mockList().prefix(5)),
-        state: .loaded,
-        canLoadMore: false,
         imageCache: MockBirdImageCache()
     )
     .background(BirdGradientBackground())

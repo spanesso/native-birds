@@ -30,3 +30,11 @@ struct BirdWikipediaSection: View {
         }
     }
 }
+
+#Preview("Active") {
+    VStack {
+        BirdWikipediaSection(url: URL(string: "https://en.wikipedia.org/wiki/Bird"))
+            .background(Color.gray.opacity(0.1))
+    }
+    .padding()
+}

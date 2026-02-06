@@ -20,3 +20,7 @@ struct BirdGradientBackground: View {
         .ignoresSafeArea()
     }
 }
+
+#Preview("BirdGradientBackgroundPreview") {
+    BirdGradientBackground()
+}

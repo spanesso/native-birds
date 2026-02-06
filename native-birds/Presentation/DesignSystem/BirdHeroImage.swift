@@ -30,3 +30,30 @@ struct BirdHeroImage: View {
         .ignoresSafeArea()
     }
 }
+
+final class PreviewImageCache: BirdImageCacheProtocol, @unchecked Sendable {
+    func image(for url: URL) async -> UIImage? {
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        return UIImage(systemName: "bird.fill")
+    }
+
+    func store(_ image: UIImage, for url: URL) async {
+    }
+}
+
+#Preview("Success") {
+    BirdHeroImage(
+        url: URL(string: "https://example.com/bird.jpg"),
+        cache: PreviewImageCache()
+    )
+    .frame(height: 300)
+}
+
+#Preview("Error") {
+    BirdHeroImage(
+        url: nil,
+        cache: PreviewImageCache()
+    )
+    .frame(height: 300)
+}
+
